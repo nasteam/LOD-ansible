@@ -32,6 +32,6 @@ RUN echo "DC1.demo.netapp.com ansible_connection=ssh ansible_user=administrator@
 
 RUN sshpass -p Netapp1! ssh -t -o StrictHostKeyChecking=no administrator@demo@dc1.demo.netapp.com 'New-ADUser -Name "dinkleberg" -Accountpassword (ConvertTo-SecureString "Netapp1!" -AsPlainText -Force) -Enabled $true'
 
-RUN wget --output-document=playbook.yml https://github.com/iwishiwasgay/ansible-playbooks/raw/main/$playbook.yml
+RUN wget --output-document=playbook.yml https://github.com/iwishiwasgay/ansible-playbooks/raw/main/playbooks/$playbook.yml
 
 RUN ansible-playbook playbook.yml
