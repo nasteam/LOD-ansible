@@ -10,7 +10,7 @@
     vserver: svm1_cluster1
     aggr: cluster1_01_SSD_1
     vol_name: photoshop
-    cifs_user: dinkleberg
+#    cifs_user: dinkleberg
   tasks:
   - name: Export Create
     na_ontap_export_policy:
@@ -78,27 +78,27 @@
       share_name: "{{ vol_name }}"
       https: true
       validate_certs: false
-  - name: CIFS User Create
-    na_ontap_cifs_local_user_modify:
+#  - name: CIFS User Create
+#    na_ontap_cifs_local_user_modify:
 #      state: present
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      name: "{{ cifs_user }}"
-      is_account_disabled: no
-      https: true
-      validate_certs: false
-  - name: CIFS User Password Set
-    na_ontap_cifs_local_user_set_password:
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      user_name: "{{ cifs_user }}"
-      user_password: "{{ password }}"
-      https: true
-      validate_certs: false
+#      vserver: "{{ vserver }}"
+#      hostname: "{{ hostname }}"
+#      username: "{{ username }}"
+#      password: "{{ password }}"
+#      name: "{{ cifs_user }}"
+#      is_account_disabled: no
+#      https: true
+#      validate_certs: false
+#  - name: CIFS User Password Set
+#    na_ontap_cifs_local_user_set_password:
+#      vserver: "{{ vserver }}"
+#      hostname: "{{ hostname }}"
+#      username: "{{ username }}"
+#      password: "{{ password }}"
+#      user_name: "{{ cifs_user }}"
+#      user_password: "{{ password }}"
+#      https: true
+#      validate_certs: false
   - name: NTFS SD Create
     na_ontap_ntfs_sd:
       state: present
@@ -118,7 +118,7 @@
       username: "{{ username }}"
       password: "{{ password }}"
       access_type: allow
-      account: "{{ cifs_user }}"
+      account: DEMO\dinkleberg
       rights: read_and_execute
       apply_to: this_folder
       security_descriptor: cifs_sd
