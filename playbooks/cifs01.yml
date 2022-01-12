@@ -99,28 +99,28 @@
 #      user_password: "{{ password }}"
 #      https: true
 #      validate_certs: false
-  - name: NTFS SD Create
-    na_ontap_ntfs_sd:
-      state: present
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      name: cifs_sd
-      owner: DEMO\Administrator
-      https: true
-      validate_certs: false
-  - name: NTFS DACL Create
-    na_ontap_ntfs_dacl:
-      state: present
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      access_type: allow
-      account: DEMO\dinkleberg
-      rights: read_and_execute
-      apply_to: this_folder
-      security_descriptor: cifs_sd
-      https: true
-      validate_certs: false
+#  - name: NTFS SD Create
+#    na_ontap_ntfs_sd:
+#      state: present
+#      vserver: "{{ vserver }}"
+#      hostname: "{{ hostname }}"
+#      username: "{{ username }}"
+#      password: "{{ password }}"
+#      name: cifs_sd
+#      owner: DEMO\Administrator
+#      https: true
+#      validate_certs: false
+#  - name: NTFS DACL Create
+#    na_ontap_ntfs_dacl:
+#      state: present
+#      vserver: "{{ vserver }}"
+#      hostname: "{{ hostname }}"
+#      username: "{{ username }}"
+#      password: "{{ password }}"
+#      access_type: allow
+#      account: DEMO\dinkleberg
+#      rights: read_and_execute
+#      apply_to: this_folder
+#      security_descriptor: cifs_sd
+#      https: true
+#      validate_certs: false
