@@ -1,5 +1,6 @@
 FROM ubuntu:latest
 ARG playbook
+ARG script
 
 RUN apt-get update \
     && apt-get install -y ansible \
@@ -35,3 +36,9 @@ RUN sshpass -p Netapp1! ssh -t -o StrictHostKeyChecking=no administrator@demo@dc
 RUN wget --output-document=playbook.yml https://github.com/nasteam/LOD-ansible/raw/main/playbooks/$playbook.yml
 
 RUN ansible-playbook playbook.yml
+
+RUN wget --output-document=script.sh https://github.com/nasteam/LOD-ansible/raw/main/restable/$script.sh
+
+RUN chmod +x script.sh
+
+RUN ./script.sh
