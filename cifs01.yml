@@ -91,7 +91,6 @@
       validate_certs: false
   - name: CIFS User Password Set
     na_ontap_cifs_local_user_set_password:
-      state: present
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
