@@ -31,7 +31,6 @@
       rw_rule: sys
       protocol: nfs
       super_user_security: sys
-      anonymous_user_id: 65534
       allow_suid: false
       hostname: "{{ hostname }}"
       username: "{{ username }}"
