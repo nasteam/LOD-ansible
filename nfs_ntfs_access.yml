@@ -24,7 +24,7 @@
   - name: Export Policy Rule Create
     na_ontap_export_policy_rule:
       state: present
-      name: photoshop_policy
+      name: allow_all
       vserver: "{{ vserver }}"
       client_match: 0.0.0.0/0
       ro_rule: sys
