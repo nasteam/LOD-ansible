@@ -80,7 +80,7 @@
       validate_certs: false
   - name: CIFS User Create
     na_ontap_cifs_local_user_modify:
-      state: present
+#      state: present
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
