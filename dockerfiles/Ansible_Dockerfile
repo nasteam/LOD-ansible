@@ -30,6 +30,6 @@ RUN sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no administrator@demo@dc1.d
 RUN echo "DC1.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo ansible_shell_type=powershell" >> /etc/ansible/hosts; \
 	echo "jumphost.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo ansible_shell_type=powershell" >> /etc/ansible/hosts;
 
-RUN wget --output-document=playbook.yml https://github.com/nasteam/LOD-ansible/tree/main/playbooks/$playbook.yml
+RUN wget --output-document=playbook.yml https://raw.githubusercontent.com/nasteam/LOD-ansible/main/playbooks/$playbook.yml
 
 RUN ansible-playbook playbook.yml
