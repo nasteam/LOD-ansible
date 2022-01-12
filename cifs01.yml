@@ -55,18 +55,18 @@
       https: true
       validate_certs: false
       volume_security_style: ntfs
-  - name: CIFS Create
-    na_ontap_cifs_server:
-      state: present
-      service_state: started
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      name: DEMOSRV01
-      workgroup: DEMOSRV
-      https: true
-      validate_certs: false
+#  - name: CIFS Create
+#    na_ontap_cifs_server:
+#      state: present
+#      service_state: started
+#      vserver: "{{ vserver }}"
+#      hostname: "{{ hostname }}"
+#      username: "{{ username }}"
+#      password: "{{ password }}"
+#      name: DEMOSRV01
+#      workgroup: DEMOSRV
+#      https: true
+#      validate_certs: false
   - name: CIFS Share Create
     na_ontap_cifs:
       state: present
@@ -108,7 +108,7 @@
       username: "{{ username }}"
       password: "{{ password }}"
       name: cifs_sd
-      owner: DEMOSRV\Administrator
+      owner: DEMO\Administrator
       https: true
       validate_certs: false
   - name: NTFS DACL Create
