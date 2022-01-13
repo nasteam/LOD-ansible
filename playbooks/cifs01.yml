@@ -101,8 +101,8 @@
   name: Configure client
   hosts: jumphost.demo.netapp.com
   collections:
-   - anisble.windows
-- name: Run basic PowerShell script
-  ansible.windows.win_powershell:
+    - anisble.windows
+  - name: Run basic PowerShell script
+    ansible.windows.win_powershell:
      script: |
       New-SmbMapping -LocalPath 'Z:' -RemotePath '\\192.168.0.131\photoshop' -UserName 'DEMO\dougd' -Password 'Netapp1!'
