@@ -74,7 +74,7 @@
     - anisble.windows
   vars:
     hostname: 192.168.0.101
-    username: admin
+    username: DEMO\Administrator
     password: Netapp1!
     vserver: svm1_cluster1
     aggr: cluster1_01_SSD_1
@@ -88,9 +88,15 @@
       surname: Dimmadome
       password: "{{ password }}"
       state: present
+  - name: Map Drive
+    community.windows.win_mapped_drive:
+      username: "{{ username }}"
+      letter: X
+      path: \\192.168.0.131\photoshop
+      password: "{{ password }}"
   - name: Add ACL
     ansible.windows.win_acl:
       user: "{{ cifs_user }}"
-      path: \\192.168.0.131\photoshop
+      path: X:\
       type: allow
       rights: Read,ExecuteFile
