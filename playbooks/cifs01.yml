@@ -102,6 +102,7 @@
   hosts: jumphost.demo.netapp.com
   collections:
     - anisble.windows
+  tasks:
   - name: Run basic PowerShell script
     ansible.windows.win_powershell:
      script: |
