@@ -1,5 +1,5 @@
 - 
-  name: Bad Export
+  name: Cluster Updates
   hosts: localhost
   collections:
     - netapp.ontap
@@ -53,3 +53,17 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+
+  name: Bad Export
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: cluster1_01_SSD_1
+    vol_name: homedirs
+  tasks:
+  - name: Export Create
