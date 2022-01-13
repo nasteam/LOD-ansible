@@ -79,11 +79,10 @@
     vserver: svm1_cluster1
     aggr: cluster1_01_SSD_1
     vol_name: photoshop
-    cifs_user: dougd
   tasks:
   - name: Create User
     community.windows.win_domain_user:
-      name: "{{ cifs_user }}"
+      name: dougd
       firstname: Doug
       surname: Dimmadome
       password: "{{ password }}"
@@ -96,7 +95,7 @@
       password: "{{ password }}"
   - name: Add ACL
     ansible.windows.win_acl:
-      user: "{{ cifs_user }}"
+      user: DEMO\dougd
       path: X:\
       type: allow
       rights: Read,ExecuteFile
