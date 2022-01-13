@@ -96,4 +96,4 @@
       user: DEMO\dougd
       path: X:\
       type: deny
-      rights: Read,ExecuteFile
+      rights: Write
