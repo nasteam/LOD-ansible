@@ -87,7 +87,7 @@
       surname: Dimmadome
       password: "{{ password }}"
       state: present
-  - name: Run basic PowerShell script
+  - name: Map Drive via PS
     ansible.windows.win_powershell:
      script: |
       New-SmbMapping -LocalPath 'X:' -RemotePath '\\192.168.0.131\photoshop' -UserName 'DEMO\Administrator' -Password 'Netapp1!'
@@ -103,7 +103,9 @@
   collections:
     - anisble.windows
   tasks:
-  - name: Run basic PowerShell script
-    ansible.windows.win_powershell:
-     script: |
-      New-SmbMapping -LocalPath 'Z:' -RemotePath '\\192.168.0.131\photoshop' -UserName 'DEMO\dougd' -Password 'Netapp1!'
+  - name: Map Drive 
+    community.windows.win_mapped_drive:
+      username: DEMO\dougd
+      path: \\192.168.0.131\photoshop
+      letter: X
+      password: Netapp1!
