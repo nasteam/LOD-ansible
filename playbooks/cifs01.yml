@@ -1,5 +1,5 @@
 - 
-  name: Bad Permissions
+  name: Configure ONTAP
   hosts: localhost
   collections:
     - netapp.ontap
@@ -67,7 +67,7 @@
       https: true
       validate_certs: false
 -
-  name: Bad Permissions
+  name: Set Up Us The Windows
   hosts: DC1.demo.netapp.com
   collections:
     - community.windows
@@ -97,3 +97,12 @@
       path: X:\
       type: deny
       rights: Write
+-
+  name: Configure client
+  hosts: jumphost.demo.netapp.com
+  collections:
+   - anisble.windows
+- name: Run basic PowerShell script
+  ansible.windows.win_powershell:
+     script: |
+      New-SmbMapping -LocalPath 'Z:' -RemotePath '\\192.168.0.131\photoshop' -UserName 'DEMO\dougd' -Password 'Netapp1!'
