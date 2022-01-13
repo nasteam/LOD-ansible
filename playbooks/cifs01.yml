@@ -3,8 +3,6 @@
   hosts: localhost
   collections:
     - netapp.ontap
-    - community.windows
-    - anisble.windows
   vars:
     hostname: 192.168.0.101
     username: admin
@@ -68,6 +66,21 @@
       share_name: "{{ vol_name }}"
       https: true
       validate_certs: false
+-
+  name: Bad Permissions
+  hosts: DC1.demo.netapp.com
+  collections:
+    - community.windows
+    - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: cluster1_01_SSD_1
+    vol_name: photoshop
+    cifs_user: dougd
+  tasks:
   - name: Create User
     community.windows.win_domain_user:
       name: "{{ cifs_user }}"
