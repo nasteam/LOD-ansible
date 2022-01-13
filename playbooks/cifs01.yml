@@ -87,7 +87,7 @@
       surname: Dimmadome
       password: "{{ password }}"
       state: present
- - name: Run basic PowerShell script
+  - name: Run basic PowerShell script
    ansible.windows.win_powershell:
      script: |
       New-SmbMapping -LocalPath 'X:' -RemotePath '\\192.168.0.131\photoshop' -UserName 'DEMO\Administrator' -Password 'Netapp1!'
