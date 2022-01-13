@@ -87,12 +87,10 @@
       surname: Dimmadome
       password: "{{ password }}"
       state: present
-  - name: Map Drive
-    community.windows.win_mapped_drive:
-      username: "{{ username }}"
-      letter: X
-      path: \\192.168.0.131\photoshop
-      password: "{{ password }}"
+ - name: Run basic PowerShell script
+   ansible.windows.win_powershell:
+     script: |
+      New-SmbMapping -LocalPath 'X:' -RemotePath '\\192.168.0.131\photoshop' -UserName 'DEMO\Administrator' -Password 'Netapp1!'
   - name: Add ACL
     ansible.windows.win_acl:
       user: DEMO\dougd
