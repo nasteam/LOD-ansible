@@ -3,6 +3,8 @@
   hosts: localhost
   collections:
     - netapp.ontap
+    - community.windows
+    - anisble.windows
   vars:
     hostname: 192.168.0.101
     username: admin
@@ -10,7 +12,7 @@
     vserver: svm1_cluster1
     aggr: cluster1_01_SSD_1
     vol_name: photoshop
-#    cifs_user: dinkleberg
+    cifs_user: dougd
   tasks:
   - name: Export Create
     na_ontap_export_policy:
@@ -55,18 +57,6 @@
       https: true
       validate_certs: false
       volume_security_style: ntfs
-#  - name: CIFS Create
-#    na_ontap_cifs_server:
-#      state: present
-#      service_state: started
-#      vserver: "{{ vserver }}"
-#      hostname: "{{ hostname }}"
-#      username: "{{ username }}"
-#      password: "{{ password }}"
-#      name: DEMOSRV01
-#      workgroup: DEMOSRV
-#      https: true
-#      validate_certs: false
   - name: CIFS Share Create
     na_ontap_cifs:
       state: present
@@ -78,49 +68,19 @@
       share_name: "{{ vol_name }}"
       https: true
       validate_certs: false
-#  - name: CIFS User Create
-#    na_ontap_cifs_local_user_modify:
-#      state: present
-#      vserver: "{{ vserver }}"
-#      hostname: "{{ hostname }}"
-#      username: "{{ username }}"
-#      password: "{{ password }}"
-#      name: "{{ cifs_user }}"
-#      is_account_disabled: no
-#      https: true
-#      validate_certs: false
-#  - name: CIFS User Password Set
-#    na_ontap_cifs_local_user_set_password:
-#      vserver: "{{ vserver }}"
-#      hostname: "{{ hostname }}"
-#      username: "{{ username }}"
-#      password: "{{ password }}"
-#      user_name: "{{ cifs_user }}"
-#      user_password: "{{ password }}"
-#      https: true
-#      validate_certs: false
-#  - name: NTFS SD Create
-#    na_ontap_ntfs_sd:
-#      state: present
-#      vserver: "{{ vserver }}"
-#      hostname: "{{ hostname }}"
-#      username: "{{ username }}"
-#      password: "{{ password }}"
-#      name: cifs_sd
-#      owner: DEMO\Administrator
-#      https: true
-#      validate_certs: false
-#  - name: NTFS DACL Create
-#    na_ontap_ntfs_dacl:
-#      state: present
-#      vserver: "{{ vserver }}"
-#      hostname: "{{ hostname }}"
-#      username: "{{ username }}"
-#      password: "{{ password }}"
-#      access_type: allow
-#      account: DEMO\dinkleberg
-#      rights: read_and_execute
-#      apply_to: this_folder
-#      security_descriptor: cifs_sd
-#      https: true
-#      validate_certs: false
+  - name: Create User
+    community.windows.win_domain_user:
+      name: "{{ cifs_user }}"
+      firstname: Doug
+      surname: Dimmadome
+      password: "{{ password }}"
+      state: present
+      domain_username: DEMO\Administrator
+      domain_password: "{{ password }}"
+      domain_server: dc1.demo.netapp.com@DEMO.NETAPP.COM
+  - name: Add ACL
+    ansible.windows.win_acl:
+      user: "{{ cifs_user }}"
+      path: \\192.168.0.131\photoshop
+      type: allow
+      rights: Read,ExecuteFile
