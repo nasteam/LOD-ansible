@@ -30,6 +30,12 @@ RUN sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no administrator@demo@dc1.d
 RUN echo "DC1.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo ansible_shell_type=powershell" >> /etc/ansible/hosts; \
 	echo "jumphost.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo ansible_shell_type=powershell" >> /etc/ansible/hosts;
 
-RUN wget --output-document=playbook.yml https://raw.githubusercontent.com/nasteam/LOD-ansible/main/playbooks/$playbook.yml
+RUN echo "192.168.0.62 rhel1" >> /etc/hosts; \
+    echo "192.168.0.5 jumphost" >> /etc/hosts; \
+    echo "192.168.0.253 DC1 dc1" >> /etc/hosts; \
+    echo "192.168.0.71 centos1" >> /etc/hosts; \
+    echo "192.168.0.101 cluster1" >> /etc/hosts
+	
+RUN wget --output-document=playbook.yml https://github.com/nasteam/ansible-playbooks/blob/nfs_ntfs/$playbook.yml
 
 RUN ansible-playbook playbook.yml
