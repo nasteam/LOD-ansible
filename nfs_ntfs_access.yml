@@ -30,7 +30,7 @@
       ro_rule: sys
       rw_rule: sys
       protocol: nfs
-      super_user_security: sys
+      super_user_security: none
       allow_suid: false
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -54,16 +54,12 @@
       https: true
       validate_certs: false
 
-  name: Bad Export
-  hosts: localhost
-  collections:
-    - netapp.ontap
-  vars:
-    hostname: 192.168.0.101
-    username: admin
-    password: Netapp1!
-    vserver: svm1_cluster1
-    aggr: cluster1_01_SSD_1
-    vol_name: homedirs
-  tasks:
-  - name: Export Create
+---
+- name: Add IP address of all hosts to all hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ item }}$'
+    line: "{{ hostvars[item].ansible_host }} {{item}}"
+    state: present
+  when: hostvars[item].ansible_host is defined
+  with_items: "{{ groups.all }}"
