@@ -87,30 +87,17 @@
       surname: Dimmadome
       password: "{{ password }}"
       state: present
+      groups:
+        - Domain Admins
+        - Domain Users
   - name: Map Drive via PS
     ansible.windows.win_powershell:
      script: |
-      New-SmbMapping -LocalPath 'X:' -RemotePath '\\192.168.0.131\photoshop' -UserName 'DEMO\Administrator' -Password 'Netapp1!'
+      New-SmbMapping -LocalPath 'X:' -RemotePath '\\192.168.0.131\photoshop' -UserName 'DEMO\Administrator' -Password 'Netapp1!';
+      Set-AdUser -Identity dougd -HomeDirectory "\\192.168.0.131\photoshop"
   - name: Add ACL
     ansible.windows.win_acl:
       user: DEMO\dougd
       path: X:\
       type: deny
       rights: Write
--
-  name: Configure client
-  hosts: jumphost.demo.netapp.com
-  collections:
-    - anisble.windows
-  tasks:
-  - name: Map Drive 
-    community.windows.win_mapped_drive:
-      username: DEMO\dougd
-      path: \\192.168.0.131\photoshop
-      letter: X
-      password: Netapp1!
-    vars:
-      ansible_become_method: runas
-      ansible_become: yes
-      ansible_become_user: DEMO\dougd
-      ansible_become_password: Netapp1!
