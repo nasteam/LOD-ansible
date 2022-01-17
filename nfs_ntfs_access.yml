@@ -54,7 +54,6 @@
       https: true
       validate_certs: false
 
----
 - name: Add IP address of all hosts to all hosts
   lineinfile:
     dest: /etc/hosts
