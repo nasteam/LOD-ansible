@@ -1,3 +1,3 @@
 # LOD-ansible
-Ansible playbooks for troubleshooting scenarios
-Usable via Lab OnDemand
+Ansible playbooks for troubleshooting scenarios  
+Usable via Lab OnDemand  
