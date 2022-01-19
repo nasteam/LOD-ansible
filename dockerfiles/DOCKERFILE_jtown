@@ -26,7 +26,7 @@ RUN	sshpass -p Netapp1! ssh-copy-id 192.168.0.188; \
 	sshpass -p Netapp1! scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub administrator@demo@dc1.demo.netapp.com:C:\\ProgramData\\ssh\\administrators_authorized_keys; \
 	sshpass -p Netapp1! scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub administrator@demo@jumphost.demo.netapp.com:C:\\ProgramData\\ssh\\administrators_authorized_keys; \
 	sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no admin@cluster1 security login create -user-or-group-name ansible -application ssh -authentication-method publickey -role admin; \
-	sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no admin@cluster1 security login publickey create -username ansible -index 0 -publickey \""$(<~/.ssh/id_rsa.pub)"\";
+	sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no admin@cluster1 security login publickey create -username ansible -index 0 -publickey $(<~/.ssh/id_rsa.pub);
 
 RUN	sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no administrator@demo@dc1.demo.netapp.com "get-acl C:\\ProgramData\\ssh\\ssh_host_dsa_key | set-acl C:\\ProgramData\\ssh\\administrators_authorized_keys"; \
 	sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no administrator@demo@jumphost.demo.netapp.com "get-acl C:\\ProgramData\\ssh\\ssh_host_dsa_key | set-acl C:\\ProgramData\\ssh\\administrators_authorized_keys"; 
@@ -43,4 +43,3 @@ RUN echo "192.168.0.62 rhel1" >> /etc/hosts; \
 # RUN wget --output-document=playbook.yml https://raw.githubusercontent.com/nasteam/LOD-ansible/main/playbooks/$playbook.yml
 
 # RUN ansible-playbook playbook.yml
-#test
