@@ -3,6 +3,7 @@
   hosts: localhost
   collections:
     - netapp.ontap
+    - community.general
   vars:
     hostname: 192.168.0.101
     username: admin
@@ -54,11 +55,18 @@
       https: true
       validate_certs: false
 
-- name: Add IP address of all hosts to all hosts
-  lineinfile:
-    dest: /etc/hosts
-    regexp: '.*{{ item }}$'
-    line: "{{ hostvars[item].ansible_host }} {{item}}"
-    state: present
-  when: hostvars[item].ansible_host is defined
-  with_items: "{{ groups.all }}"
+-
+    name: rhel config
+    hosts: rhel1
+    tasks:
+      - name: create mount dir
+        file:
+          path: /mnt/home
+          state: directory
+      - name: mount homedirs
+        ansible.posix.mount:
+          src: 192.168.1.131:/homedirs
+          path: /mnt/home
+          opts: rw,vers=3
+          state: mounted
+          fstype: nfs
