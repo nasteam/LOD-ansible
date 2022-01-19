@@ -24,7 +24,7 @@ RUN	ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N "";
 	
 RUN	sshpass -p Netapp1! ssh-copy-id 192.168.0.188; \
 	sshpass -p Netapp1! scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub administrator@demo@dc1.demo.netapp.com:C:\\ProgramData\\ssh\\administrators_authorized_keys; \
-	sshpass -p Netapp1! scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub administrator@demo@jumphost.demo.netapp.com:C:\\ProgramData\\ssh\\administrators_authorized_keys;
+	sshpass -p Netapp1! scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub administrator@demo@jumphost.demo.netapp.com:C:\\ProgramData\\ssh\\administrators_authorized_keys; \
 	sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no admin@cluster1 security login create -user-or-group-name ansible -application ssh -authentication-method publickey -role admin; \
 	sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no admin@cluster1 security login publickey create -username ansible -index 0 -publickey \"$(<~/.ssh/id_rsa.pub)\"
 
