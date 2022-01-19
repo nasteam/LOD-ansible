@@ -6,11 +6,11 @@
   tasks:
   - name: Create ARP Entry
     na_ontap_command:
-      hostname: 192.168.0.111
+      hostname: 192.168.0.101
       username: admin
       password: Netapp1!
       https: true
       validate_certs: no
-      command: [ 'network', 'arp', 'create', 'remotehost', '192.168.0.5', 'mac', '40:55:39:25:27:c1' ]
+      command: [ 'network', 'arp', 'create', '-remotehost', '192.168.0.5', '-mac', '40:55:39:25:27:c1', '-vserver', 'cluster1' ]
       vserver: cluster1
       privilege: 'admin'
