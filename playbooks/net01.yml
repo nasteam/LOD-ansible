@@ -9,6 +9,7 @@
     password: Netapp1!
   tasks:
   - name: Create ARP Entry
+    na_ontap_command:
     hostname: "{{ hostname }}"
     username: "{{ username }}"
     password: "{{ password }}"
