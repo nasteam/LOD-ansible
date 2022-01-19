@@ -1,0 +1,19 @@
+- 
+  name: Static ARP
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+  tasks:
+  - name: Create ARP Entry
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    validate_certs: no
+    command: [ 'network', 'arp', 'create', 'remotehost', '192.168.0.5', 'mac', '40:55:39:25:27:c1' ]
+    vserver: cluster1
+    privilege: 'admin'
