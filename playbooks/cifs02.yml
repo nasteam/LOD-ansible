@@ -67,7 +67,7 @@
       https: true
       validate_certs: false
   - name: Enable CIFS export policies
-    na_ontap_cifs:
+    na_ontap_command:
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
