@@ -66,6 +66,8 @@
        nfsv41: enabled
        nfsv4: enabled
        nfsv4_id_domain: fakedomain.local
+       validate_certs: false
+       https: true
 -
   name: Set It Up For You
   hosts: 192.168.0.188
