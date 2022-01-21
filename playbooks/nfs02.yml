@@ -66,6 +66,12 @@
        nfsv41: enabled
        nfsv4: enabled
        nfsv4_id_domain: fakedomain.local
+-
+  name: Set It Up For You
+  hosts: 192.168.0.188
+  collections:
+    - ansible.posix.mount
+   tasks:
    - name: Mount Volume
      ansible.posix.mount:
        src: 192.168.0.131:/dbprod01
