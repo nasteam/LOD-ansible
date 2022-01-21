@@ -9,12 +9,12 @@
     password: Netapp1!
     vserver: svm1_cluster1
     aggr: cluster1_01_SSD_1
-    vol_name: photoshop
+    vol_name: dbprod01
   tasks:
   - name: Export Create
     na_ontap_export_policy:
       state: present
-      name: photoshop_policy
+      name: dbprod01_policy
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -24,7 +24,7 @@
   - name: Export Policy Rule Create
     na_ontap_export_policy_rule:
       state: present
-      name: photoshop_policy
+      name: dbprod01_policy
       vserver: "{{ vserver }}"
       client_match: 0.0.0.0/0
       ro_rule: sys
@@ -46,7 +46,7 @@
       aggregate_name: "{{ aggr }}"
       size: 1
       size_unit: gb
-      policy: photoshop_policy
+      policy: pdbprod01_policy
       junction_path: "/{{ vol_name }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -66,3 +66,11 @@
        nfsv41: enabled
        nfsv4: enabled
        nfsv4_id_domain: fakedomain.local
+   - name: What If I Mount It For You?
+     ansible.posix.mount:
+       src: 192.168.0.131:/dbprod01
+       path: /mnt/dbprod01
+       opts: rw,sync,hard,intr,sec=sys
+       boot: no
+       state: mounted
+       fstype: nfs
