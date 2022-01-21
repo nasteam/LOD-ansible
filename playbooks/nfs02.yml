@@ -55,30 +55,30 @@
       validate_certs: false
       unix_permissions: 777
       volume_security_style: unix
-   - name: Configure NFS
-     na_ontap_nfs:
-       state: present
-       hostname: "{{ hostname }}"
-       username: "{{ username }}"
-       password: "{{ password }}"
-       vserver: "{{ vserver }}"
-       nfsv41_pnfs: disabled
-       nfsv41: enabled
-       nfsv4: enabled
-       nfsv4_id_domain: fakedomain.local
-       validate_certs: false
-       https: true
--
+  - name: Configure NFS
+    na_ontap_nfs:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      nfsv41_pnfs: disabled
+      nfsv41: enabled
+      nfsv4: enabled
+      nfsv4_id_domain: fakedomain.local
+      validate_certs: false
+      https: true
+ -
   name: Set It Up For You
   hosts: 192.168.0.188
   collections:
     - ansible.posix.mount
-   tasks:
-   - name: Mount Volume
-     ansible.posix.mount:
-       src: 192.168.0.131:/dbprod01
-       path: /mnt/dbprod01
-       opts: rw,sync,hard,intr,sec=sys
-       boot: no
-       state: mounted
-       fstype: nfs
+  tasks:
+  - name: Mount Volume
+    ansible.posix.mount:
+      src: 192.168.0.131:/dbprod01
+      path: /mnt/dbprod01
+      opts: rw,sync,hard,intr,sec=sys
+      boot: no
+      state: mounted
+      fstype: nfs
