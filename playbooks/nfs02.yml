@@ -1,4 +1,4 @@
-- 
+-
   name: NFSv4 Nobody
   hosts: localhost
   collections:
@@ -46,7 +46,7 @@
       aggregate_name: "{{ aggr }}"
       size: 1
       size_unit: gb
-      policy: pdbprod01_policy
+      policy: dbprod01_policy
       junction_path: "/{{ vol_name }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -66,7 +66,7 @@
        nfsv41: enabled
        nfsv4: enabled
        nfsv4_id_domain: fakedomain.local
-   - name: What If I Mount It For You?
+   - name: Mount Volume
      ansible.posix.mount:
        src: 192.168.0.131:/dbprod01
        path: /mnt/dbprod01
