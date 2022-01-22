@@ -91,7 +91,7 @@
   - name: Offline That Bitch
     na_ontap_volume:
       state: present
-      name: photoshop
+      name: dbprod01
       vserver: svm1_cluster1
       hostname: 192.168.0.101
       username: admin
