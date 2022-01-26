@@ -87,15 +87,15 @@
   - anisble.windows
  tasks:
   - name: Create User
-  community.windows.win_domain_user:
-   name: dougd
-   firstname: Doug
-   surname: Dimmadome
-   password: "{{ password }}"
-   state: present
-   groups:
-    - Domain Admins
-    - Domain Users
+     community.windows.win_domain_user:
+      name: dougd
+      firstname: Doug
+      surname: Dimmadome
+      password: "{{ password }}"
+      state: present
+      groups:
+       - Domain Admins
+       - Domain Users
 - name: Download Tomcat using get_url
      become: yes
      get_url:
