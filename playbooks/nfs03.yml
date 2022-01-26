@@ -62,11 +62,11 @@
     tasks:
       - name: create mount dir
         file:
-          path: /mnt/home
+          path: /mnt
           state: directory
       - name: mount homedirs
         ansible.posix.mount:
-          src: 192.168.1.131:/homedirs
+          src: 192.168.1.131:/
           path: /mnt/home
           opts: rw,vers=3
           state: mounted
