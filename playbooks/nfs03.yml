@@ -55,6 +55,13 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+  - name: Unix User Create
+    netapp.ontap.na_ontap_unix_user:
+      full_name: Doug Dimmadome
+      group_id: 1
+      id: 1222
+      name: dougd
+      vserver: "{{ vserver }}"
 
 -
     name: rhel config
@@ -71,3 +78,30 @@
           opts: rw,vers=3
           state: mounted
           fstype: nfs
+
+-
+ name: Set Up Us The Windows
+ hosts: DC1.demo.netapp.com
+ collections:
+  - community.windows
+  - anisble.windows
+ tasks:
+  - name: Create User
+  community.windows.win_domain_user:
+   name: dougd
+   firstname: Doug
+   surname: Dimmadome
+   password: "{{ password }}"
+   state: present
+   groups:
+    - Domain Admins
+    - Domain Users
+- name: Download Tomcat using get_url
+     become: yes
+     get_url:
+       url: https://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.40/bin/apache-tomcat-8.5.40.tar.gz
+       dest: /tmp
+       mode: 0755
+       checksum: sha512:5bdea5414713c9ba39e226f062701fa14998b1a798c9750f956a0f59b5edabb8d83af9ec9f81cf9f47fa92c21b560c9b2be1b543d0bd8f1b49579b69101d3a8f
+       group: tomcat
+       owner: tomcat
