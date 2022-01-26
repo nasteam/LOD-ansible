@@ -107,6 +107,7 @@
        - Domain Admins
        - Domain Users 
 - name: Download Tomcat using get_url
+     hosts: rhel1
      become: yes
      get_url:
        url: https://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.40/bin/apache-tomcat-8.5.40.tar.gz
