@@ -64,20 +64,26 @@
       vserver: "{{ vserver }}"
 
 -
-    name: rhel config
-    hosts: rhel1
-    tasks:
-      - name: create mount dir
-        file:
-          path: /mnt/home
-          state: directory
-      - name: mount homedirs
-        ansible.posix.mount:
-          src: 192.168.0.131:/homedirs
-          path: /mnt/home
-          opts: rw,vers=3
-          state: mounted
-          fstype: nfs
+  name: rhel config
+  hosts: rhel1
+  tasks:
+    - name: create mount dir
+      file:
+        path: /mnt/home
+        state: directory
+    - name: mount homedirs
+      ansible.posix.mount:
+        src: 192.168.0.131:/homedirs
+        path: /mnt/home
+        opts: rw,vers=3
+        state: mounted
+        fstype: nfs
+    - name: Create User
+      ansible.builtin.user:
+        name: dougd
+        comment: Doug Dimmadome
+        uid: 1222
+        group: users
 
 -
  name: Set Up Us The Windows
@@ -85,17 +91,21 @@
  collections:
   - community.windows
   - anisble.windows
+ vars:
+ hostname: 192.168.0.101
+ username: DEMO\Administrator
+ password: Netapp1!
  tasks:
   - name: Create User
-     community.windows.win_domain_user:
-      name: dougd
-      firstname: Doug
-      surname: Dimmadome
-      password: "{{ password }}"
-      state: present
-      groups:
-       - Domain Admins
-       - Domain Users
+   community.windows.win_domain_user:
+    name: dougd
+    firstname: Doug
+    surname: Dimmadome
+    password: "{{ password }}"
+    state: present
+   groups:
+    - Domain Admins
+    - Domain Users 
 - name: Download Tomcat using get_url
      become: yes
      get_url:
@@ -103,5 +113,4 @@
        dest: /tmp
        mode: 0755
        checksum: sha512:5bdea5414713c9ba39e226f062701fa14998b1a798c9750f956a0f59b5edabb8d83af9ec9f81cf9f47fa92c21b560c9b2be1b543d0bd8f1b49579b69101d3a8f
-       group: tomcat
-       owner: tomcat
+       owner: dougd
