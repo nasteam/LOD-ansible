@@ -66,8 +66,8 @@
           state: directory
       - name: mount homedirs
         ansible.posix.mount:
-          src: 192.168.1.131:/homedirs
+          src: 192.168.0.131:/homedirs
           path: /mnt/home
-          opts: rw
+          opts: rw,vers=3
           state: mounted
           fstype: nfs
