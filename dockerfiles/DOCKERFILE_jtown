@@ -47,6 +47,6 @@ RUN echo "192.168.0.62 rhel1" >> /etc/hosts; \
     echo "192.168.0.71 centos1" >> /etc/hosts; \
     echo "192.168.0.101 cluster1" >> /etc/hosts
 	
-# RUN wget --output-document=playbook.yml https://raw.githubusercontent.com/nasteam/LOD-ansible/main/playbooks/$playbook.yml
+RUN wget --output-document=playbook.yml https://raw.githubusercontent.com/nasteam/LOD-ansible/main/playbooks/$playbook.yml
 
-# RUN ansible-playbook playbook.yml
+RUN ansible-playbook playbook.yml
