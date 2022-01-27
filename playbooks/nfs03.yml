@@ -65,7 +65,8 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
-
+      https: true
+      validate_certs: false
 -
   name: rhel config
   hosts: rhel1
