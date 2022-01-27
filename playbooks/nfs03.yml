@@ -69,7 +69,7 @@
       validate_certs: false
 -
   name: rhel config
-  hosts: rhel1
+  hosts: 192.168.0.62
   tasks:
     - name: create mount dir
       file:
