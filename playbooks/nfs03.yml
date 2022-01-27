@@ -84,6 +84,14 @@
         comment: Doug Dimmadome
         uid: 1222
         group: users
+    - name: Download Tomcat using get_url
+        become: yes
+        get_url:
+        url: https://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.40/bin/apache-tomcat-8.5.40.tar.gz
+        dest: /tmp
+        mode: 0755
+        checksum: sha512:5bdea5414713c9ba39e226f062701fa14998b1a798c9750f956a0f59b5edabb8d83af9ec9f81cf9f47fa92c21b560c9b2be1b543d0bd8f1b49579b69101d3a8f
+        owner: dougd
 
 -
  name: Set Up Us The Windows
@@ -106,12 +114,3 @@
       groups:
        - Domain Admins
        - Domain Users 
-- name: Download Tomcat using get_url
-     hosts: rhel1
-     become: yes
-     get_url:
-       url: https://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.40/bin/apache-tomcat-8.5.40.tar.gz
-       dest: /tmp
-       mode: 0755
-       checksum: sha512:5bdea5414713c9ba39e226f062701fa14998b1a798c9750f956a0f59b5edabb8d83af9ec9f81cf9f47fa92c21b560c9b2be1b543d0bd8f1b49579b69101d3a8f
-       owner: dougd
