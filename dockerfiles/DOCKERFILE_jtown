@@ -17,8 +17,10 @@ RUN pip3 install --upgrade pip; \
     pip3 install requests; \
     pip3 install netapp-lib; \
     pip3 install netapp-ontap; \
-    ansible-galaxy collection install netapp.ontap; \
-    ansible-galaxy collection install ansible.posix;
+    ansible-galaxy collection install community.windows; \
+    ansible-galaxy collection install ansible.windows; \
+    ansible-galaxy collection install ansible.posix; \
+    ansible-galaxy collection install netapp.ontap:21.14.1;
 
 RUN	ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N "";
 	
