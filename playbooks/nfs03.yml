@@ -62,6 +62,9 @@
       id: 1222
       name: dougd
       vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
 
 -
   name: rhel config
