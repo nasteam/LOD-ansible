@@ -25,7 +25,7 @@ if  ! test -f "$HOME/.ssh/id_rsa"
 
         # prep ssh keys
         ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N ""
-        sshpass -p Netapp1! ssh-copy-id 192.168.0.66
+        sshpass -p Netapp1! ssh-copy-id 192.168.0.61
 
         # copy to Windows Hosts
         sshpass -p Netapp1! scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub administrator@demo@dc1.demo.netapp.com:C:\\ProgramData\\ssh\\administrators_authorized_keys
@@ -44,14 +44,14 @@ if  ! test -f "$HOME/.ssh/id_rsa"
         echo "DC1.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo ansible_shell_type=powershell" >> /etc/ansible/hosts
         echo "jumphost.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo ansible_shell_type=powershell" >> /etc/ansible/hosts
         echo "centos01.demo.netapp.com ansible_connection=ssh anisble_user=root" >> /etc/ansible/hosts
-        echo "awx.demo.netapp.com ansible_connection=ssh ansible_user=root" >> /etc/anisble/hosts
+        echo "awx.demo.netapp.com ansible_connection=ssh ansible_user=root" >> /etc/ansible/hosts
 fi
 # try to dl a playbook
 # TO-DO: Fix this. It keeps saying no hosts found for centos01, I don't know what to do
 # ansible-pull -U https://github.com/nasteam/LOD-ansible.git new-playbooks/nick01.yml
 
 # use curl instead
-curl -L -o playbook.yml https://github.com/nasteam/LOD-ansible/raw/main/new-playbooks/nick01.yml
+curl -L -o playbook.yml https://github.com/nasteam/LOD-ansible/raw/main/new-playbooks/$playbook
 
 # play the playbook for you lmao
 ansible-playbook playbook.yml
