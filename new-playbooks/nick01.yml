@@ -87,6 +87,7 @@
       https: true
 -
   name: Set It Up For You
+  debugger: on_failed
   hosts: centos01.demo.netapp.com
   collections:
     - ansible.posix
