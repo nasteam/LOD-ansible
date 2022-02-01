@@ -20,7 +20,7 @@ sshpass -p Netapp1! ssh -o StrictHostKeyChecking=no administrator@demo@jumphost.
 
 echo "DC1.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo ansible_shell_type=powershell" >> /etc/ansible/hosts
 echo "jumphost.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo ansible_shell_type=powershell" >> /etc/ansible/hosts
-echo "192.168.0.62 ansible_connection=ssh anisble_user=root" >> /etc/ansible/hosts
+echo "192.168.0.61 ansible_connection=ssh anisble_user=root" >> /etc/ansible/hosts
 
 curl -L -o playbook.yml "https://raw.githubusercontent.com/nasteam/LOD-ansible/main/new-playbooks/$playbook.yml"
 
