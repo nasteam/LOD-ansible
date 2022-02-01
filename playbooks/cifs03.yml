@@ -29,9 +29,9 @@
       vserver: "{{ vserver }}"
       client_match: 0.0.0.0/0
       ro_rule: any
-      rw_rule: never
+      rw_rule: any
       protocol: cifs
-      super_user_security: none
+      super_user_security: any
       anonymous_user_id: 65534
       allow_suid: false
       hostname: "{{ hostname }}"
