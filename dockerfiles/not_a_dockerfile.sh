@@ -22,4 +22,4 @@ echo "DC1.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo
 echo "jumphost.demo.netapp.com ansible_connection=ssh ansible_user=administrator@demo ansible_shell_type=powershell" >> /etc/ansible/hosts
 echo "192.168.0.61 ansible_connection=ssh anisble_user=root" >> /etc/ansible/hosts
 
-ansible-pull -U https://raw.githubusercontent.com/nasteam/LOD-ansible/main/new-playbooks/$playbook.yml
+ansible-pull -U https://raw.githubusercontent.com/nasteam/LOD-ansible.git new-playbooks/$playbook.yml
