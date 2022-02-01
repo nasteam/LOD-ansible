@@ -14,8 +14,6 @@ do
     esac
 done
 
-playbook=
-
 if  ! test -f "$HOME/.ssh/id_rsa"
         # ensure required collections are installed. ansible.windows and ansible.posix are redundant, but purple text isn't a bad thing
         then ansible-galaxy collection install community.windows
