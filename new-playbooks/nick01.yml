@@ -70,7 +70,7 @@
       https: true
 -
   name: Set It Up For You
-  hosts: 192.168.0.62
+  hosts: 192.168.0.61
   collections:
     - ansible.posix
   tasks:
