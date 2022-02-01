@@ -11,7 +11,6 @@ ansible-galaxy collection install ansible.posix
 ansible-galaxy collection install netapp.ontap:21.14.1
 
 # prep ssh keys
-ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N ""
 sshpass -p Netapp1! ssh-copy-id 192.168.0.4
 
 # copy to Windows Hosts
