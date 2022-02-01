@@ -34,4 +34,11 @@ echo "centos01.demo.netapp.com ansible_connection=ssh anisble_user=root" >> /etc
 echo "awx.demo.netapp.com ansible_connection=ssh ansible_user=root" >> /etc/anisble/hosts
 
 # try to dl a playbook
-ansible-pull -U https://github.com/nasteam/LOD-ansible.git new-playbooks/nick01.yml
+# TO-DO: Fix this. It keeps saying no hosts found for centos01, I don't know what to do
+# ansible-pull -U https://github.com/nasteam/LOD-ansible.git new-playbooks/nick01.yml
+
+# use curl instead
+curl -L -o playbook.yml https://github.com/nasteam/LOD-ansible/raw/main/new-playbooks/nick01.yml
+
+# play the playbook for you lmao
+ansible-playbook playbook.yml
