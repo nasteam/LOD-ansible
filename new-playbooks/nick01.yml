@@ -21,6 +21,24 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+  - name: Mod Default Policy
+    na_ontap_export_policy:
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: sys
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: Export Policy Rule Create
     na_ontap_export_policy_rule:
       state: present
