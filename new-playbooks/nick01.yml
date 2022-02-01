@@ -22,7 +22,6 @@
       https: true
       validate_certs: false
   - name: Mod Default Policy
-    na_ontap_export_policy:
     na_ontap_export_policy_rule:
       state: present
       name: default
