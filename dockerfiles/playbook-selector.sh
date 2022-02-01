@@ -49,7 +49,7 @@ fi
 # ansible-pull -U https://github.com/nasteam/LOD-ansible.git new-playbooks/nick01.yml
 
 # use curl instead
-curl -L -o playbook.yml https://github.com/nasteam/LOD-ansible/raw/main/new-playbooks/$playbook
+curl -L -o $playbook.yml https://github.com/nasteam/LOD-ansible/raw/main/new-playbooks/$playbook.yml
 
 # play the playbook for you lmao
-ansible-playbook playbook.yml
+ansible-playbook $playbook.yml
