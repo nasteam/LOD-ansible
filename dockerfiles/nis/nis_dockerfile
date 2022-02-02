@@ -1,0 +1,43 @@
+FROM ubuntu:latest
+
+ENV DEBIAN_FRONTEND=noninteractive \
+	HOST=nis.demo.netapp.com \
+	YPMAPDIR=/var/yp \
+	YPBINDIR=/usr/lib/yp \
+	DOMAIN=demo.netapp.com
+
+EXPOSE 111 111/udp 834 834/udp 835 835/udp 836 836/udp 837 837/udp 
+
+RUN apt-get update \
+    && apt-get -yq install nis \
+    && apt-get -yq install wget \
+    && apt-get install -yq vim 
+    
+RUN echo demo.netapp.com > /etc/defaultdomain; \
+	echo "domain demo.netapp.com server nis.demo.netapp.com" >> /etc/yp.conf
+
+
+RUN echo NISSERVER=master > /etc/default/nis; \
+	echo NISCLIENT=true >> /etc/default/nis; \
+	echo YPPWDDIR=/etc >> /etc/default/nis; \
+	echo YPCHANGEOK=chsh >> /etc/default/nis; \
+	echo NISMASTER= >> /etc/default/nis; \
+	echo YPSERVARGS=\"-p 834\" >> /etc/default/nis; \
+	echo YPBINDARGS=\"-p 835\" >> /etc/default/nis; \
+	echo YPPASSWDDARGS=\"--port 836\" >> /etc/default/nis; \
+	echo YPXFRDARGS=\"-p 837\" >> /etc/default/nis; 
+
+RUN wget -O /var/yp/Makefile https://labsetup4d3d3d3.s3.amazonaws.com/Makefile; \
+	wget -O /etc/passwd https://labsetup4d3d3d3.s3.amazonaws.com/lab_users;
+
+RUN /etc/init.d/rpcbind restart
+
+
+RUN echo "mkdir -p $YPMAPDIR/$DOMAIN"; \
+	mkdir -p $YPMAPDIR/$DOMAIN; \
+	echo "echo $HOST >$YPMAPDIR/ypservers" ;\
+	echo $HOST >$YPMAPDIR/ypservers; \
+	echo "$YPMAPDIR/ypservers | awk '{print $$0, $$0}' | $YPBINDIR/makedbm - $YPMAPDIR/$DOMAIN/ypservers"; \
+	cat $YPMAPDIR/ypservers | awk '{print $$0, $$0}' | $YPBINDIR/makedbm - $YPMAPDIR/$DOMAIN/ypservers; \
+	echo "cd $YPMAPDIR && make NOPUSH=true"; \
+	cd $YPMAPDIR && make NOPUSH=true; 
