@@ -86,7 +86,7 @@
       validate_certs: false
 -
   name: rhel config
-  hosts: 192.168.0.61
+  hosts: centos01.demo.netapp.com
   tasks:
     - name: create mount dir
       file:
@@ -111,7 +111,6 @@
         dest: /tmp/apache.tar.gz
         mode: 0755
         owner: dougd
-
 -
   name: Set Up Us The Windows
   hosts: DC1.demo.netapp.com
