@@ -15,6 +15,7 @@
       -d -p 111:111 -p 111:111/udp -p 834-837:834-837 
       -p 834-837:834-837/udp 
       --hostname nis 
+      --name nis_server
       --domainname demo.netapp.com 
       --privileged 
       -i -t nis 
