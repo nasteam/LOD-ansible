@@ -81,4 +81,5 @@
       path: /mnt/photoshop
       owner: root
       group: root
-      mode: 755
+      mode: '0755'
+      state: directory
