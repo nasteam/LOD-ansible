@@ -70,17 +70,3 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
--
-  name: What if the path exists for you?
-  hosts: centos01.demo.netapp.com
-  collections:
-    - ansible.posix
-  tasks:
-  - name: Mount Volume
-    ansible.posix.mount:
-      src: 192.168.0.131:/photoshop
-      path: /mnt/photoshop
-      opts: rw,sync,hard,intr,sec=sys
-      boot: no
-      state: mounted
-      fstype: nfs
