@@ -23,7 +23,7 @@ if  ! test -f "$HOME/.ssh/id_rsa"
 
         # prep ssh keys
         ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N ""
-        sshpass -p Netapp1! ssh-copy-id 192.168.0.61
+        sshpass -p Netapp1! ssh-copy-id -o StrictHostKeyChecking=no 192.168.0.61
 
         # copy to Windows Hosts
         sshpass -p Netapp1! scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub administrator@demo@dc1.demo.netapp.com:C:\\ProgramData\\ssh\\administrators_authorized_keys
