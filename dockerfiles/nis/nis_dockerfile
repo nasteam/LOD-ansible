@@ -30,7 +30,7 @@ RUN echo NISSERVER=master > /etc/default/nis; \
 RUN wget -O /var/yp/Makefile https://labsetup4d3d3d3.s3.amazonaws.com/Makefile; \
 	wget -O /etc/passwd https://labsetup4d3d3d3.s3.amazonaws.com/lab_users;
 
-RUN wget -O /etc/init.d/rpcbind https://raw.githubusercontent.com/nasteam/LOD-ansible/main/dockerfiles/nis/rpcbind;
+RUN wget -O /etc/init.d/rpcbind https://raw.githubusercontent.com/nasteam/LOD-ansible/main/dockerfiles/nis/rpcbind; \
 	/etc/init.d/rpcbind restart;
 
 
