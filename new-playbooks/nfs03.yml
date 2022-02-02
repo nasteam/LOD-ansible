@@ -111,6 +111,7 @@
         dest: /tmp/apache.tar.gz
         mode: 0755
         owner: dougd
+        validate_certs: no
 -
   name: Set Up Us The Windows
   hosts: DC1.demo.netapp.com
