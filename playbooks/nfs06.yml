@@ -94,6 +94,26 @@
       validate_certs: false
       unix_permissions: 777
       volume_security_style: unix
+  - name: Create NIS
+    na_ontap_command:
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: no
+      command: [ 'nis-domain', 'create', '-vserver', "{{ vserver }}", '-domain', 'demo.netapp.com', '-nis-servers', "{{nis_server}}" ]
+      privilege: 'admin'
+  - name: Set ns-switch
+    na_ontap_command:
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: no
+      command: [ 'ns-switch', 'modify', '-vserver', "{{ vserver }}", '-database', 'passwd', '-sources', 'nis,files' ]
+      privilege: 'admin'
   - name: Configure NFS
     na_ontap_nfs:
       state: present
@@ -107,16 +127,6 @@
       nfsv4_id_domain: demo.netapp.local
       validate_certs: false
       https: true
-  - name: Set ns-switch
-    na_ontap_command:
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      https: true
-      validate_certs: no
-      command: [ 'ns-switch', 'modify', '-vserver', "{{ vserver }}", '-database', 'passwd', '-sources', 'nis,files' ]
-      privilege: 'admin'
 -
   name: Set It Up For You
   hosts: centos01.demo.netapp.com
