@@ -72,7 +72,6 @@
       validate_certs: false
 -
   name: What if the path exists for you?
-  debugger: on_failed
   hosts: centos01.demo.netapp.com
   collections:
     - ansible.posix
