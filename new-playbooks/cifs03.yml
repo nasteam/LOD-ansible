@@ -9,13 +9,13 @@
     password: Netapp1!
     vserver: svm1_cluster1
     aggr: aggr1
-    vol_name: photoshop
+    vol_name: vol01
     cifs_user: dougd
   tasks:
   - name: Export Create
     na_ontap_export_policy:
       state: present
-      name: photoshop_policy
+      name: volume_policy
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -25,7 +25,7 @@
   - name: Export Policy Rule Create
     na_ontap_export_policy_rule:
       state: present
-      name: photoshop_policy
+      name: volume_policy
       vserver: "{{ vserver }}"
       client_match: 0.0.0.0/0
       ro_rule: any
@@ -64,7 +64,7 @@
       aggregate_name: "{{ aggr }}"
       size: 1
       size_unit: gb
-      policy: photoshop_policy
+      policy: volume_policy
       junction_path: "/{{ vol_name }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -83,6 +83,61 @@
       share_name: "{{ vol_name }}"
       https: true
       validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "home"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: volume_policy
+      junction_path: "/home"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      volume_security_style: ntfs
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "dbprod01"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: volume_policy
+      junction_path: "/dbprod01"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      unix_permissions: 777
+      volume_security_style: unix
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      path: "/dbprod01"
+      share_name: "dbprod01"
+      https: true
+      validate_certs: false
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      path: "/home"
+      share_name: "home"
+      https: true
+      validate_certs: false      
   - name: Modify the CIFS Server
     na_ontap_command:
       vserver: "{{ vserver }}"
