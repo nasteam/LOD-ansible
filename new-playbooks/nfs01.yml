@@ -70,3 +70,15 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+-
+  name: Set It Up For You
+  hosts: centos01.demo.netapp.com
+  collections:
+    - ansible.builtin
+  tasks:
+  - name: Create Directory
+    ansible.builtin.file:
+      path: /mnt/photoshop
+      owner: root
+      group: root
+      mode: 755
