@@ -1,0 +1,118 @@
+- 
+  name: Cluster Updates
+  hosts: localhost
+  collections:
+    - netapp.ontap
+    - community.general
+    - ansible.posix
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: homedirs
+  tasks:
+  - name: Export Create
+    na_ontap_export_policy:
+      state: present
+      name: allow_all
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Export Policy Rule Create
+    na_ontap_export_policy_rule:
+      state: present
+      name: allow_all
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: none
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: allow_all
+      volume_security_style: ntfs
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Unix User Create
+    netapp.ontap.na_ontap_unix_user:
+      full_name: Doug Dimmadome
+      group_id: 1
+      id: 1222
+      name: dougd
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+-
+  name: rhel config
+  hosts: 192.168.0.61
+  tasks:
+    - name: create mount dir
+      file:
+        path: /mnt/home
+        state: directory
+    - name: mount homedirs
+      ansible.posix.mount:
+        src: 192.168.0.131:/homedirs
+        path: /mnt/home
+        opts: rw,vers=3
+        state: mounted
+        fstype: nfs
+    - name: Create User
+      ansible.builtin.user:
+        name: dougd
+        comment: Doug Dimmadome
+        uid: 1222
+        group: users
+    - name: Download Tomcat using get_url
+      get_url:
+        url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.16/bin/apache-tomcat-10.0.16.tar.gz
+        dest: /tmp/apache.tar.gz
+        mode: 0755
+        owner: dougd
+
+-
+  name: Set Up Us The Windows
+  hosts: DC1.demo.netapp.com
+  collections:
+   - community.windows
+   - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+  tasks:
+   - name: Create User
+     community.windows.win_domain_user:
+       name: dougd
+       firstname: Doug
+       surname: Dimmadome
+       password: "{{ password }}"
+       state: present
+       groups:
+        - Domain Admins
+        - Domain Users 
