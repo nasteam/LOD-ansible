@@ -39,7 +39,7 @@ start ()
         chown _rpc:root $STATEDIR
         chmod 0755 $STATEDIR
     fi
-    if [ `ls -dl "$STATEDIR" | grep -cE '^drwxr-xr-x. [0-9]+ _rpc root '` -lt 1 ] ; then
+    if [ `ls -dl "$STATEDIR" | grep -cE '^drwxr-xr-x(\.|) [0-9]+ _rpc root '` -lt 1 ] ; then
         log_begin_msg "$STATEDIR not owned by root"
         log_end_msg 1
         exit 1
