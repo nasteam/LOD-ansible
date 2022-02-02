@@ -125,7 +125,7 @@
       nfsv41_pnfs: disabled
       nfsv41: enabled
       nfsv4: enabled
-      nfsv4_id_domain: demo.netapp.local
+      nfsv4_id_domain: demo.netapp.com
       validate_certs: false
       https: true
 -
