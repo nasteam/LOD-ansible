@@ -87,7 +87,7 @@
       https: true
 -
   name: Set It Up For You
-  hosts: 192.168.0.61
+  hosts: centos01.demo.netapp.com
   collections:
     - ansible.posix
   tasks:
