@@ -75,10 +75,3 @@
       boot: no
       state: mounted
       fstype: nfs
--
-  name: Offline That Vol
-  hosts: localhost
-  collections:
-    - netapp.ontap
-  tasks:
-  - name: Offline That Bitch
