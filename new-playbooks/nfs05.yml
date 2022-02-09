@@ -1,0 +1,84 @@
+-
+  name: V4ACLbasic
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: data
+  tasks:
+  - name: Create a vol and export it
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: sys
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: default
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      unix_permissions: 777
+      volume_security_style: unix
+  - name: Configure NFS
+    na_ontap_nfs:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      nfsv41_pnfs: disabled
+      nfsv41: enabled
+      nfsv40_acl: enabled
+      nfsv41_acl: enabled
+      nfsv4: enabled
+      nfsv4_id_domain: demo.netapp.com
+      validate_certs: false
+      https: true
+-
+  name: Set It Up For You
+  debugger: on_failed
+  hosts: centos01.demo.netapp.com
+  collections:
+    - ansible.posix
+  tasks:
+  - name: Mount Volume
+    ansible.posix.mount:
+      src: 192.168.0.131:/data
+      path: /mnt/data
+      opts: rw,sync,hard,intr,sec=sys
+      boot: no
+      state: mounted
+      fstype: nfs
+-
+  name: Offline That Vol
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  tasks:
+  - name: Offline That Bitch
