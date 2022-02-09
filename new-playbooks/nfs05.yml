@@ -61,7 +61,7 @@
       validate_certs: false
       https: true
 -
-  name: Set It Up For You
+  name: Mount volume
   debugger: on_failed
   hosts: centos01.demo.netapp.com
   collections:
