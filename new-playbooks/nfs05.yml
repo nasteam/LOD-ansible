@@ -85,7 +85,13 @@
       validate_certs: no
   - name: install get-pip
     script: ./get-pip.py
-    executable: /usr/bin/python
+      args:
+        executable: /usr/bin/python
+  register: python_result
+  
+  - name: Get stdout or stderr from the output
+    debug:
+      var: python_result.stdout
   - name: Install pexpect python package
     pip:
       name: pexpect
