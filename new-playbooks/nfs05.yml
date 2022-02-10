@@ -79,12 +79,12 @@
   - name: Download pip
     get_url:
       url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
-      dest: /tmp/get-pip.py
+      dest: get-pip.py
       mode: 0755
       owner: root
       validate_certs: no
   - name: install get-pip
-    script: /tmp/get-pip.py
+    script: get-pip.py
   - name: Install pexpect python package
     pip:
       name: pexpect
