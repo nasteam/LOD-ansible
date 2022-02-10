@@ -1,5 +1,5 @@
 -
-  name: V4ACLbasic
+  name: Ontap_config
   hosts: localhost
   collections:
     - netapp.ontap
@@ -11,7 +11,7 @@
     aggr: aggr1
     vol_name: data
   tasks:
-  - name: Create a vol and export it
+  - name: export policy
     na_ontap_export_policy_rule:
       state: present
       name: default
@@ -61,7 +61,7 @@
       validate_certs: false
       https: true
 -
-  name: Mount volume
+  name: CENTOS_SETUP
   debugger: on_failed
   hosts: centos01.demo.netapp.com
   collections:
@@ -98,3 +98,34 @@
       state: present
       username: administrator
       password: Netapp1!
+  
+-
+  name: DC CONFIGURE
+  hosts: DC1.demo.netapp.com
+  collections:
+   - community.windows
+   - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+  tasks:
+   - name: Create User
+     community.windows.win_domain_user:
+       name: dougd
+       firstname: Doug
+       surname: Dimmadome
+       password: "{{ password }}"
+       state: present
+       groups:
+        - Domain Admins
+        - Domain Users 
+   - Update Groups with GID
+     community.general.ldap_attrs:
+       dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
+       attributes:
+         gidNumber: 12345
+    state: exact
+    server_uri: ldap://DC1.demo.netapp.com/
+    bind_dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
+    bind_pw: "{{ password }}"
