@@ -76,6 +76,10 @@
       boot: no
       state: mounted
       fstype: nfs
+  - name: get-pip
+    ansible.builtin.command:
+      cmd: sudo easy_install pip
+      creates: /usr/bin/pip
   - name: Install the latest version of realmd and dependancies
     ansible.builtin.package:
      name:
