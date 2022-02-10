@@ -66,6 +66,7 @@
   hosts: centos01.demo.netapp.com
   collections:
     - ansible.posix
+    - ogratwicklcs.realmd_ipa_ad
   tasks:
   - name: Mount Volume
     ansible.posix.mount:
@@ -75,3 +76,18 @@
       boot: no
       state: mounted
       fstype: nfs
+ - name: Install the latest version of realmd and dependancies
+   ansible.builtin.package:
+    name:
+      - realmd
+      - oddjob
+      - oddjob-mkhomedir
+      - sssd
+      - samba-common-tools
+    state: latest
+ - name: Join to Active Directory domain
+   realm_join:
+     domain: demo.netapp.com
+     state: present
+     username: administrator
+     password: Netapp1!

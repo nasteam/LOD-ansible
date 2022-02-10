@@ -20,6 +20,7 @@ if  ! test -f "$HOME/.ssh/id_rsa"
         ansible-galaxy collection install ansible.windows
         ansible-galaxy collection install ansible.posix
         ansible-galaxy collection install netapp.ontap:21.14.1
+        ansible-galaxy collection install ogratwicklcs.realmd_ipa_ad
 
         # prep ssh keys
         ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N ""
