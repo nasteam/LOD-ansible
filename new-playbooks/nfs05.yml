@@ -80,6 +80,9 @@
     ansible.builtin.command:
       cmd: sudo easy_install pip
       creates: /usr/bin/pip
+  - name: Install pexpect python package
+    pip:
+      name: pexpect
   - name: Install the latest version of realmd and dependancies
     ansible.builtin.package:
      name:
