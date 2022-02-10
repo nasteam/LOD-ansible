@@ -78,7 +78,7 @@
       fstype: nfs
   - name: get-pip
     ansible.builtin.command:
-      cmd: sudo easy_install pip
+      cmd: ['sudo', 'easy_install', 'pip']
       creates: /usr/bin/pip
   - name: Install pexpect python package
     pip:
