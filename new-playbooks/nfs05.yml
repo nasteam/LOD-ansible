@@ -83,8 +83,8 @@
       mode: 0755
       owner: root
       validate_certs: no
-    - name: install get-pip
-      script: /tmp/get-pip.py
+  - name: install get-pip
+    script: /tmp/get-pip.py
   - name: Install pexpect python package
     pip:
       name: pexpect
@@ -132,4 +132,4 @@
       state: exact
       server_uri: ldap://DC1.demo.netapp.com/
       bind_dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
-      bind_pw: "{{ password }}"#
+      bind_pw: "{{ password }}"
