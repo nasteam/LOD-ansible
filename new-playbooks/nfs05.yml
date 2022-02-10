@@ -71,7 +71,7 @@
     ansible.posix.mount:
       src: 192.168.0.131:/data
       path: /mnt/data
-      opts: rw,sync,hard,intr,sec=sys
+      opts: vers=4.1,rw,sync,hard,intr,sec=sys
       boot: no
       state: mounted
       fstype: nfs
