@@ -76,18 +76,18 @@
       boot: no
       state: mounted
       fstype: nfs
- - name: Install the latest version of realmd and dependancies
-   ansible.builtin.package:
-    name:
-      - realmd
-      - oddjob
-      - oddjob-mkhomedir
-      - sssd
-      - samba-common-tools
-    state: latest
- - name: Join to Active Directory domain
-   realm_join:
-     domain: demo.netapp.com
-     state: present
-     username: administrator
-     password: Netapp1!
+  - name: Install the latest version of realmd and dependancies
+    ansible.builtin.package:
+     name:
+       - realmd
+       - oddjob
+       - oddjob-mkhomedir
+       - sssd
+       - samba-common-tools
+     state: latest
+  - name: Join to Active Directory domain
+    realm_join:
+      domain: demo.netapp.com
+      state: present
+      username: administrator
+      password: Netapp1!
