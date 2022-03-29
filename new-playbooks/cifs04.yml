@@ -127,7 +127,6 @@
       share_name: "dbprod01"
       https: true
       validate_certs: false
-      share_properties: encrypt_data
   - name: CIFS Share Create
     na_ontap_cifs:
       state: present
