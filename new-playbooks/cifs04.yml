@@ -159,4 +159,4 @@
       https: true
       validate_certs: no
       command: [ 'cifs', 'options', 'modify', '-is-smb3-enabled', 'false', '-vserver', 'svm1_cluster1', '-is-smb31-enabled', 'false' ]
-      privilege: 'diag'
+      privilege: 'advanced'
