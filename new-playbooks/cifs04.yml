@@ -139,6 +139,17 @@
       https: true
       validate_certs: false
       share_properties: encrypt_data
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      path: "/home"
+      share_name: "testshare"
+      https: true
+      validate_certs: false
   - name: Modify the CIFS Server
     na_ontap_command:
       vserver: "{{ vserver }}"
