@@ -79,7 +79,7 @@
   - name: install pip
     community.general.easy_install:
       name: pip
-  
+      state: present
   - name: Get stdout or stderr from the output
     debug:
       var: python_result.stdout
