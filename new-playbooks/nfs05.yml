@@ -76,10 +76,19 @@
       boot: no
       state: mounted
       fstype: nfs
-  - name: install pip
-    community.general.easy_install:
-      name: pip
-      state: present
+  - name: Download pip
+    get_url:
+      url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
+      dest: ./get-pip.py
+      mode: 0755
+      owner: root
+      validate_certs: no
+  - name: install get-pip
+    script: ./get-pip.py
+      args:
+        executable: /usr/bin/python
+      register: python_result
+  
   - name: Get stdout or stderr from the output
     debug:
       var: python_result.stdout
