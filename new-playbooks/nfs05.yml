@@ -108,7 +108,7 @@
     realm_join:
       domain: demo.netapp.com
       state: present
-      username: administrator
+      username: Administrator
       password: Netapp1!
 -
   name: DC CONFIGURE
