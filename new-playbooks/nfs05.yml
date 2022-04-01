@@ -84,16 +84,7 @@
       state: mounted
       fstype: nfs
 
-  - name: install pip
-    ansible.builtin.script: ./get-pip.py
-  
-  - name: Get stdout or stderr from the output
-    debug:
-      var: python_result.stdout
-  - name: Install pexpect python package
-    pip:
-      name: pexpect
-  - name: Install the latest version of realmd and dependancies
+  - name: Install the latest version of realmd and dependancies and pip
     ansible.builtin.package:
      name:
        - realmd
@@ -101,7 +92,13 @@
        - oddjob-mkhomedir
        - sssd
        - samba-common-tools
+       - python2-pip
      state: latest
+  
+  - name: Install pexpect python package
+    pip:
+      name: pexpect
+
   - name: Join to Active Directory domain
     realm_join:
       domain: demo.netapp.com
