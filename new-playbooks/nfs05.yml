@@ -98,11 +98,29 @@
       state: present
       username: Administrator
       password: Netapp1!
-  - name: Update Groups with GID
+  - name: Update domain user with GID
     community.general.ldap_attrs:
       dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
       attributes:
         gidNumber: 768400513
+      state: exact
+      server_uri: ldap://DC1.demo.netapp.com/
+      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
+      bind_pw: Netapp1!
+  - name: Update domain amin with GID
+    community.general.ldap_attrs:
+      dn: CN=Domain Admins,CN=Users,DC=demo,DC=netapp,DC=com
+      attributes:
+        gidNumber: 768400512
+      state: exact
+      server_uri: ldap://DC1.demo.netapp.com/
+      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
+      bind_pw: Netapp1!
+  - name: Update domain amin with GID
+    community.general.ldap_attrs:
+      dn: CN=dougd,CN=Users,DC=demo,DC=netapp,DC=com
+      attributes:
+        gidNumber: 768401126
       state: exact
       server_uri: ldap://DC1.demo.netapp.com/
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
