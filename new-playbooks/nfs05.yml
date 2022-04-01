@@ -106,7 +106,7 @@
       state: exact
       server_uri: ldap://DC1.demo.netapp.com/
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
-      bind_pw: "{{ password }}"
+      bind_pw: Netapp1!
 -
   name: DC CONFIGURE
   hosts: DC1.demo.netapp.com
