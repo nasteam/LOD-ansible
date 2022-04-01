@@ -84,7 +84,7 @@
       owner: root
       validate_certs: no
   - name: install pip
-    ansible.builtin.script:: ./get-pip.py
+    ansible.builtin.script: ./get-pip.py
   
   - name: Get stdout or stderr from the output
     debug:
