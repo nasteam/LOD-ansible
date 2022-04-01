@@ -83,8 +83,8 @@
       mode: 0755
       owner: root
       validate_certs: no
-  - name: install get-pip
-    script: ./get-pip.py
+  - name: install pip
+    ansible.builtin.script:: ./get-pip.py
   
   - name: Get stdout or stderr from the output
     debug:
@@ -107,6 +107,15 @@
       state: present
       username: Administrator
       password: Netapp1!
+  - name: Update Groups with GID
+    community.general.ldap_attrs:
+      dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
+      attributes:
+        gidNumber: 768400513
+      state: exact
+      server_uri: ldap://DC1.demo.netapp.com/
+      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
+      bind_pw: "{{ password }}"
 -
   name: DC CONFIGURE
   hosts: DC1.demo.netapp.com
@@ -128,12 +137,3 @@
       groups:
        - Domain Admins
        - Domain Users 
-  - name: Update Groups with GID
-    community.general.ldap_attrs:
-      dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
-      attributes:
-        gidNumber: 12345
-      state: exact
-      server_uri: ldap://DC1.demo.netapp.com/
-      bind_dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
-      bind_pw: "{{ password }}"
