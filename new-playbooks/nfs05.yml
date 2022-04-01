@@ -60,6 +60,13 @@
       nfsv4_id_domain: demo.netapp.com
       validate_certs: false
       https: true
+  - name: Download pip
+    get_url:
+      url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
+      dest: ./get-pip.py
+      mode: 0755
+      owner: root
+      validate_certs: no
 -
   name: CENTOS_SETUP
   debugger: on_failed
@@ -76,13 +83,7 @@
       boot: no
       state: mounted
       fstype: nfs
-  - name: Download pip
-    get_url:
-      url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
-      dest: ./get-pip.py
-      mode: 0755
-      owner: root
-      validate_certs: no
+
   - name: install pip
     ansible.builtin.script: ./get-pip.py
   
