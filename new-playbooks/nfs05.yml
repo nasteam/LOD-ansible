@@ -76,7 +76,19 @@
       boot: no
       state: mounted
       fstype: nfs
-
+  - name: remove access to mount
+    file: dest=/mnt/data 
+      mode: 0000
+      owner: root
+      group: root
+  - name: Insert a line at the end of a file. #idmapd.conf
+    lineinfile:
+      path: /etc/idmapd.conf
+      line: Domain = demo.netapp.com
+  - name: Restart service rpcidmapd
+    ansible.builtin.service:
+      name: rpcidmapd 
+      state: restarted
   - name: Install the latest version of realmd and dependancies and pip
     ansible.builtin.package:
      name:
