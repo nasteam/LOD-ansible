@@ -60,7 +60,7 @@
       nfsv4_id_domain: demo.netapp.com
       validate_certs: false
       https: true
-  - name: configure ldap schema
+  - name: copy new schema
     netapp.ontap.na_ontap_command:
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -68,8 +68,18 @@
       vserver: "{{ vserver }}"
       validate_certs: false
       https: true
-      command: ['ldap','client','schema','copy','-schema','MS-AD-BIS','-new-schema-name','demo','-vserver svm1_cluster1']
+      command: ['ldap','client','schema','copy','-schema','MS-AD-BIS','-new-schema-name','demo','-vserver svm1_cluster1e']
+      #command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
+  - name: apply new schema
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
       command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
+
+    
   - name: create and apply ldap client
     netapp.ontap.na_ontap_ldap_client:
       hostname: "{{ hostname }}"
