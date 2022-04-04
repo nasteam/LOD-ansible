@@ -77,7 +77,8 @@
       state: mounted
       fstype: nfs
   - name: remove access to mount
-    file: dest=/mnt/data 
+    file: 
+      dest: /mnt/data 
       mode: 0000
       owner: root
       group: root
