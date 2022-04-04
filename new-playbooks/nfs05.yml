@@ -65,6 +65,9 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
       command: ['ldap','client','schema','copy','-schema','MS-AD-BIS','-new-schema-name','demo','-vserver svm1_cluster1']
       command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
   - name: create and apply ldap client
@@ -91,6 +94,7 @@
       vserver: "{{ vserver }}"
       validate_certs: false
       https: true
+      
 
 -
   name: CENTOS_SETUP
