@@ -105,7 +105,7 @@
       vserver: "{{ vserver }}"
       validate_certs: false
       https: true
-  - name: fix nsswitch
+  - name: fix nsswitch passwd
     netapp.ontap.na_ontap_name_service_switch:
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -114,7 +114,18 @@
       validate_certs: false
       https: true    
       state: present
-      database_type: passwd,group
+      database_type: passwd
+      sources: files,ldap
+  - name: fix nsswitch group
+    netapp.ontap.na_ontap_name_service_switch:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true    
+      state: present
+      database_type: group
       sources: files,ldap
 
 -
