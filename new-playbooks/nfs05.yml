@@ -105,7 +105,17 @@
       vserver: "{{ vserver }}"
       validate_certs: false
       https: true
-      
+  - name: fix nsswitch
+    netapp.ontap.na_ontap_name_service_switch:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true    
+      state: present
+      database_type: passwd,group
+      sources: files,ldap
 
 -
   name: CENTOS_SETUP
