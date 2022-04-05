@@ -107,8 +107,8 @@
         group: users
     - name: Download Tomcat using get_url
       get_url:
-        url: https://github.com/apache/tomcat80/archive/refs/heads/trunk.zip
-        dest: /tmp/apache.zip
+        url: https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.99/bin/apache-tomcat-7.0.99.tar.gz
+        dest: /tmp/apache.tar.gz
         mode: 0755
         owner: dougd
         validate_certs: no
