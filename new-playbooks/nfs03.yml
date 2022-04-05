@@ -107,7 +107,7 @@
         group: users
     - name: Download Tomcat using get_url
       get_url:
-        url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.16/bin/apache-tomcat-10.0.16.tar.gz
+        url: https://github.com/apache/tomcat80/archive/refs/heads/trunk.zip
         dest: /tmp/apache.tar.gz
         mode: 0755
         owner: dougd
