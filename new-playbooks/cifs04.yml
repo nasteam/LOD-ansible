@@ -1,1 +1,124 @@
-
+- 
+  name: Configure ONTAP
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: carta_vol
+    cifs_user: root
+  tasks:
+  - name: Export Create
+    na_ontap_export_policy:
+      state: present
+      name: carta_policy
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Mod Default Policy
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      protocol: any
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false      
+  - name: Export Policy Rule Create
+    na_ontap_export_policy_rule:
+      state: present
+      name: carta_policy
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: sys
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: carta_policy
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      volume_security_style: unix
+      unix_permissions: 777
+  - name: Configure NFS
+    na_ontap_nfs:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      nfsv41_pnfs: disabled
+      nfsv41: enabled
+      nfsv4: enabled
+      nfsv4_id_domain: localdomain
+      validate_certs: false
+      https: true
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: svm1_root
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      volume_security_style: ntfs
+-
+  name: Set Up Us The Windows
+  hosts: DC1.demo.netapp.com
+  collections:
+    - community.windows
+    - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: photoshop
+  tasks:
+  - name: Create User
+    community.windows.win_domain_user:
+      name: root
+      firstname: Root
+      surname: User
+      password: "{{ password }}"
+      state: present
+      groups:
+        - Domain Admins
+        - Domain Users
+      enabled: no
