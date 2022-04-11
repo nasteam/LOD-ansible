@@ -230,7 +230,7 @@
     community.general.ldap_attrs:
       dn: CN=dougd,CN=Users,DC=demo,DC=netapp,DC=com
       attributes:
-        gidNumber: 768401125
+        uidNumber: 768401125
       state: exact
       server_uri: ldap://DC1.demo.netapp.com/
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
