@@ -80,7 +80,7 @@
       validate_certs: false
       https: true
       privilege: advanced
-      command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']    
+      command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
   - name: create and apply ldap client
     netapp.ontap.na_ontap_ldap_client:
       hostname: "{{ hostname }}"
@@ -112,7 +112,7 @@
       password: "{{ password }}"
       vserver: "{{ vserver }}"
       validate_certs: false
-      https: true    
+      https: true
       state: present
       database_type: passwd
       sources: files,ldap
@@ -123,7 +123,7 @@
       password: "{{ password }}"
       vserver: "{{ vserver }}"
       validate_certs: false
-      https: true    
+      https: true
       state: present
       database_type: group
       sources: files,ldap
@@ -147,7 +147,7 @@
       state: present
       groups:
        - Domain Admins
-       - Domain Users 
+       - Domain Users
 -
   name: CENTOS_SETUP
   debugger: on_failed
@@ -165,8 +165,8 @@
       state: mounted
       fstype: nfs
   - name: remove access to mount
-    file: 
-      dest: /mnt/data 
+    file:
+      dest: /mnt/data
       mode: 0000
       owner: root
       group: root
@@ -176,7 +176,7 @@
       line: Domain = demo.netapp.com
   - name: Restart service rpcidmapd
     ansible.builtin.service:
-      name: rpcidmapd 
+      name: rpcidmapd
       state: restarted
   - name: Install the latest version of realmd and dependancies and pip
     ansible.builtin.package:
@@ -188,7 +188,7 @@
        - samba-common-tools
        - python2-pip
      state: latest
-  
+
   - name: Install pexpect python package
     pip:
       name: pexpect
@@ -217,11 +217,11 @@
       server_uri: ldap://DC1.demo.netapp.com/
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
       bind_pw: Netapp1!
-  - name: Update domain adminin with GID
+  - name: Update dougd with GID
     community.general.ldap_attrs:
       dn: CN=dougd,CN=Users,DC=demo,DC=netapp,DC=com
       attributes:
-        gidNumber: 768401126
+        uidNumber: 768401125
       state: exact
       server_uri: ldap://DC1.demo.netapp.com/
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
