@@ -89,7 +89,7 @@
   - name: Volume Create
     na_ontap_volume:
       state: present
-      name: svm1_root
+      name: svm1_cluster1_root
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
