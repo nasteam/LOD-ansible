@@ -43,7 +43,9 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
-      unix_permissions: 777
+      unix_permissions: 755
+      user_id: 0
+      group_id: 0
       volume_security_style: unix
   - name: Configure NFS
     na_ontap_nfs:
@@ -183,12 +185,13 @@
       boot: no
       state: mounted
       fstype: nfs
-  - name: set access on mount
-    file:
-      dest: /mnt/data
-      mode: 0755
-      owner: root
-      group: root
+# i dunno why we're doing this from the client?
+#  - name: set access on mount
+#    file:
+#      dest: /mnt/data
+#      mode: 0755
+#      owner: root
+#      group: root
   - name: Insert a line at the end of a file. #idmapd.conf
     lineinfile:
       path: /etc/idmapd.conf
