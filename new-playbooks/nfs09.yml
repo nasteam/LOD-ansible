@@ -9,7 +9,7 @@
     password: Netapp1!
     vserver: svm1_cluster1
     aggr: aggr1
-    vol_name: carta_vol
+    vol_name: carta
     cifs_user: root
   tasks:
   - name: Export Create
