@@ -134,12 +134,6 @@
       root_volume: dr_vol1
       root_volume_aggregate: aggr1
       root_volume_security_style: unix
-      services:
-        cifs:
-          allowed: true
-        nfs:
-          allowed: true
-          enabled: true
       hostname: "{{ hostname2 }}"
       username: "{{ username }}"
       password: "{{ password }}"
