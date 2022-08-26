@@ -108,7 +108,7 @@
       wait_for_online: True
       time_out: 300
       snaplock_type: non_snaplock
-      hostname: "{{ hostname }}"
+      hostname: "{{ hostname2 }}"
       username: "{{ username }}"
       password: "{{ password }}"
       https: true
@@ -122,7 +122,7 @@
       wait_for_online: True
       time_out: 300
       snaplock_type: non_snaplock
-      hostname: "{{ hostname }}"
+      hostname: "{{ hostname2 }}"
       username: "{{ username }}"
       password: "{{ password }}"
       https: true
