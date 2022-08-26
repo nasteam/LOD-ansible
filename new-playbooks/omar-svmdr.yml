@@ -1,0 +1,117 @@
+- 
+  name: Configure ONTAP
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: photoshop
+    cifs_user: dougd
+    dst_vserver: svm1_cluster1-dr
+  tasks:
+  - name: Export Create
+    na_ontap_export_policy:
+      state: present
+      name: photoshop_policy
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Mod Default Policy
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      protocol: any
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false      
+  - name: Export Policy Rule Create
+    na_ontap_export_policy_rule:
+      state: present
+      name: photoshop_policy
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: sys
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: photoshop_policy
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      volume_security_style: ntfs
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      path: "/{{ vol_name }}"
+      share_name: "{{ vol_name }}"
+      https: true
+      validate_certs: false
+  - name: Create SVM
+    netapp.ontap.na_ontap_svm:
+      state: present
+      services:
+        cifs:
+          allowed: true
+        nfs:
+          allowed: true
+          enabled: true
+      hostname: 192.168.0.102
+      username: "{{ netapp_username }}"
+      password: "{{ netapp_password }}"
+      https: true
+      validate_certs: false
+  - name: Create SnapMirror relationship - SVM DR (creating and peering destination svm)
+    tags: create_svmdr
+    netapp.ontap.na_ontap_snapmirror:
+      state: present
+    source_endpoint:
+      cluster: cluster1
+      path: "{{ vserver + ':' }}"
+    destination_endpoint:
+      cluster: "{{ _destination_cluster }}"
+      path: "{{ dst_vserver + ':' }}"
+    create_destination:
+      enabled: true
+    hostname: 192.168.0.102
+    username: "{{ username }}"
+    password: "{{ password }}"
+    https: true
+    validate_certs: false
