@@ -97,6 +97,8 @@
       peer_options:
         hostname: "{{ hostname2 }}"
       encryption_protocol_proposed: tls_psk
+      https: true
+      validate_certs: false
   - name: Create SVM
     netapp.ontap.na_ontap_svm:
       state: present
