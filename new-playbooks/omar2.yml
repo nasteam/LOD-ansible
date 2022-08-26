@@ -75,6 +75,40 @@
       https: true
       validate_certs: false
       volume_security_style: ntfs
+  - name: Create SVM
+    netapp.ontap.na_ontap_svm:
+      state: present
+      name: "{{ vserver }}"
+      services:
+        cifs:
+          allowed: true
+        nfs:
+          allowed: true
+          enabled: true
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create data interface - REST - NAS
+    netapp.ontap.na_ontap_interface:
+      state: present
+      interface_name: cifs1
+      home_port: e0g
+      home_node: cluster1-01
+      admin_status: up
+      failover_scope: default
+      service_policy: default-data-files
+      is_auto_revert: true
+      interface_type: ip
+      address: cifs1
+      netmask: 255.255.255.0
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"  
+      https: true
+      validate_certs: false
   - name: create DNS
     na_ontap_dns:
       state: present
