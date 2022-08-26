@@ -75,6 +75,18 @@
       https: true
       validate_certs: false
       volume_security_style: ntfs
+  - name: Create cifs_server
+    netapp.ontap.na_ontap_cifs_server:
+      state: present
+      name: CIFS2
+      vserver: "{{ vserver }}"
+      service_state: stopped
+      domain: demo.netapp.com
+      admin_user_name: Administrator
+      admin_password: "{{ password }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
   - name: CIFS Share Create
     na_ontap_cifs:
       state: present
