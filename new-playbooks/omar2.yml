@@ -194,6 +194,7 @@
     tags: create_svmdr
     netapp.ontap.na_ontap_snapmirror:
       state: present
+      identity_preserve: yes
       source_endpoint:
         cluster: cluster1
         path: "{{ vserver + ':' }}"
