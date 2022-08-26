@@ -64,7 +64,6 @@
       state: present
       name: "{{ vol_name }}"
       vserver: "{{ vserver }}"
-      aggregate_name: "{{ aggr }}"
       auto_provision_as: flexgroup
       size: 1
       size_unit: gb
