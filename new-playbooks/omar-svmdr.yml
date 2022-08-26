@@ -145,6 +145,21 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+  - name: Enable CIFS
+    netapp.ontap.na_ontap_svm:
+      state: present
+      name: "{{ dst_vserver }}"
+      services:
+        cifs:
+          allowed: true
+        nfs:
+          allowed: true
+          enabled: true
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: Create SnapMirror relationship - SVM DR (creating and peering destination svm)
     tags: create_svmdr
     netapp.ontap.na_ontap_snapmirror:
