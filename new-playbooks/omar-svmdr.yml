@@ -99,10 +99,27 @@
       encryption_protocol_proposed: tls_psk
       https: true
       validate_certs: false
+  - name: Create Aggregates and wait 5 minutes until aggregate is online
+    netapp.ontap.na_ontap_aggregate:
+      state: present
+      service_state: online
+      name: aggr1
+      disk_count: 13
+      wait_for_online: True
+      time_out: 300
+      snaplock_type: non_snaplock
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: Create SVM
     netapp.ontap.na_ontap_svm:
       state: present
       name: "{{ dst_vserver }}"
+      root_volume: dr_vol1
+      root_volume_aggregate: aggr1
+      root_volume_security_style: unix
       services:
         cifs:
           allowed: true
