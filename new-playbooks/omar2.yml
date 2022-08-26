@@ -10,14 +10,15 @@
     password: Netapp1!
     vserver: svm2_cluster1
     aggr: aggr1
-    vol_name: photoshop
+    vol_name: abe
     cifs_user: dougd
     dst_vserver: svm1_cluster1-dr
+    policy: abe_policy
   tasks:
   - name: Export Create
     na_ontap_export_policy:
       state: present
-      name: photoshop_policy
+      name: "{{ policy }}"
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -44,7 +45,7 @@
   - name: Export Policy Rule Create
     na_ontap_export_policy_rule:
       state: present
-      name: photoshop_policy
+      name: "{{ policy }}"
       vserver: "{{ vserver }}"
       client_match: 0.0.0.0/0
       ro_rule: sys
@@ -66,7 +67,7 @@
       aggregate_name: "{{ aggr }}"
       size: 1
       size_unit: gb
-      policy: photoshop_policy
+      policy: "{{ policy }}"
       junction_path: "/{{ vol_name }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
