@@ -102,6 +102,7 @@
   - name: Create SVM
     netapp.ontap.na_ontap_svm:
       state: present
+      name: "{{ dst_vserver }}"
       services:
         cifs:
           allowed: true
