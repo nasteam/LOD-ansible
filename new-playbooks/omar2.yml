@@ -75,6 +75,18 @@
       https: true
       validate_certs: false
       volume_security_style: ntfs
+  - name: create DNS
+    na_ontap_dns:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver:  "{{ vserver }}"
+      domains: demo.netapp.com
+      nameservers: 192.168.0.253
+      skip_validation: true
+      https: true
+      validate_certs: false
   - name: Create cifs_server
     netapp.ontap.na_ontap_cifs_server:
       state: present
