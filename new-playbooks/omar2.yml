@@ -101,7 +101,7 @@
       service_policy: default-data-files
       is_auto_revert: true
       interface_type: ip
-      address: cifs1
+      address: 192.168.0.135
       netmask: 255.255.255.0
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
