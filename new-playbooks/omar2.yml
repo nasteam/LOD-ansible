@@ -87,6 +87,8 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: CIFS Share Create
     na_ontap_cifs:
       state: present
