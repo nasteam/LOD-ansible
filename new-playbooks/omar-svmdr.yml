@@ -5,6 +5,7 @@
     - netapp.ontap
   vars:
     hostname: 192.168.0.101
+    hostname2: 192.168.0.102
     username: admin
     password: Netapp1!
     vserver: svm1_cluster1
@@ -84,6 +85,18 @@
       share_name: "{{ vol_name }}"
       https: true
       validate_certs: false
+  - name: Create cluster peer
+    netapp.ontap.na_ontap_cluster_peer:
+      state: present
+      source_intercluster_lifs: 192.168.0.121,192.168.0.122
+      dest_intercluster_lifs: 192.168.0.123,192.168.0.124
+      passphrase: Netapp1!
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      peer_options:
+        hostname: "{{ hostname2 }}"
+      encryption_protocol_proposed: tls_psk
   - name: Create SVM
     netapp.ontap.na_ontap_svm:
       state: present
@@ -93,25 +106,25 @@
         nfs:
           allowed: true
           enabled: true
-      hostname: 192.168.0.102
-      username: "{{ netapp_username }}"
-      password: "{{ netapp_password }}"
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
       https: true
       validate_certs: false
   - name: Create SnapMirror relationship - SVM DR (creating and peering destination svm)
     tags: create_svmdr
     netapp.ontap.na_ontap_snapmirror:
       state: present
-    source_endpoint:
-      cluster: cluster1
-      path: "{{ vserver + ':' }}"
-    destination_endpoint:
-      cluster: "{{ _destination_cluster }}"
-      path: "{{ dst_vserver + ':' }}"
-    create_destination:
-      enabled: true
-    hostname: 192.168.0.102
-    username: "{{ username }}"
-    password: "{{ password }}"
-    https: true
-    validate_certs: false
+      source_endpoint:
+        cluster: cluster1
+        path: "{{ vserver + ':' }}"
+      destination_endpoint:
+        cluster: cluster2
+        path: "{{ dst_vserver + ':' }}"
+      create_destination:
+        enabled: true
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
