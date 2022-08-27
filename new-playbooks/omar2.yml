@@ -167,6 +167,7 @@
       state: present
       service_state: online
       name: aggr1
+      nodes: cluster2-01
       disk_count: 13
       wait_for_online: True
       time_out: 300
