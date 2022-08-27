@@ -249,6 +249,8 @@
       hostname: "{{ hostname2 }}"
       username: "{{ username }}"
       password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: Create cifs_server - SVMDR
     netapp.ontap.na_ontap_cifs_server:
       state: present
