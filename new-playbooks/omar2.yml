@@ -206,3 +206,59 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+  - name: Create data interface - REST - NAS - CL2
+    netapp.ontap.na_ontap_interface:
+      state: present
+      interface_name: cifs1
+      home_port: e0g
+      home_node: cluster2-01
+      admin_status: up
+      failover_scope: default
+      service_policy: default-data-files
+      is_auto_revert: true
+      interface_type: ip
+      address: 192.168.0.136
+      netmask: 255.255.255.0
+      vserver: "{{ dst_vserver }}"
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"  
+      https: true
+      validate_certs: false
+  - name: create DNS - SVMDR
+    na_ontap_dns:
+      state: present
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver:  "{{ dst_vserver }}"
+      domains: demo.netapp.com
+      nameservers: 192.168.0.253
+      skip_validation: true
+      https: true
+      validate_certs: false
+  - name: Create cifs_server - SVMDR
+    netapp.ontap.na_ontap_cifs_server:
+      state: present
+      name: CIFS2
+      vserver: "{{ dst_vserver }}"
+      service_state: stopped
+      domain: demo.netapp.com
+      admin_user_name: Administrator
+      admin_password: "{{ password }}"
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: CIFS Share Create - SVMDR
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ dst_vserver }}"
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      path: "/{{ vol_name }}"
+      share_name: "{{ vol_name }}"
+      https: true
+      validate_certs: false
