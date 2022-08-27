@@ -34,6 +34,7 @@
       ro_rule: any
       rw_rule: any
       protocol: any
+      rule_index: 1
       super_user_security: any
       anonymous_user_id: 65534
       allow_suid: false
@@ -48,6 +49,7 @@
       name: "{{ policy }}"
       vserver: "{{ vserver }}"
       client_match: 0.0.0.0/0
+      rule_index: 2
       ro_rule: sys
       rw_rule: sys
       protocol: nfs
