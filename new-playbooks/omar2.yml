@@ -237,10 +237,19 @@
       skip_validation: true
       https: true
       validate_certs: false
+  - name: Start SVMDR SVM
+    netapp.ontap.na_ontap_svm:
+      state: present
+      name: "{{ dst_vserver }}"
+      admin_state: running
+      use_rest: always
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
   - name: Create cifs_server - SVMDR
     netapp.ontap.na_ontap_cifs_server:
       state: present
-      name: CIFS2
+      name: CIFS3
       vserver: "{{ dst_vserver }}"
       service_state: stopped
       domain: demo.netapp.com
