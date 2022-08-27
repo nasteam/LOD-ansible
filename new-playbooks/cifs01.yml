@@ -28,6 +28,7 @@
       name: default
       vserver: "{{ vserver }}"
       client_match: 0.0.0.0/0
+      rule_index: 1
       ro_rule: any
       rw_rule: any
       protocol: any
@@ -44,6 +45,7 @@
       state: present
       name: photoshop_policy
       vserver: "{{ vserver }}"
+      rule_index: 1
       client_match: 0.0.0.0/0
       ro_rule: sys
       rw_rule: sys
