@@ -49,6 +49,7 @@
       state: present
       name: default
       vserver: "{{ vserver }}"
+      rule_index: 1
       client_match: 0.0.0.0/0
       ro_rule: any
       rw_rule: any
@@ -66,6 +67,7 @@
       state: present
       name: dbprod01_policy
       vserver: "{{ vserver }}"
+      rule_index: 1
       client_match: 0.0.0.0/0
       ro_rule: sys
       rw_rule: sys
