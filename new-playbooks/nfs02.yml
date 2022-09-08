@@ -85,6 +85,7 @@
       nfsv41: enabled
       nfsv4: enabled
       nfsv4_id_domain: fakedomain.local
+      nfsv4_numeric_ids: disabled
       validate_certs: false
       https: true
 -
