@@ -3,6 +3,7 @@
   hosts: localhost
   collections:
     - netapp.ontap
+    - ansible.builtin
   vars:
     hostname: 192.168.0.101
     username: admin
@@ -150,15 +151,12 @@
       share_name: "testshare"
       https: true
       validate_certs: false
-  - name: Install NetApp PCL python package
-      ansible.builtin.pip:
-      name: netapp-ontap
   - name: Download Break Script
-      ansible.builtin.get_url:
+    ansible.builtin.get_url:
       url: https://github.com/nasteam/LOD-ansible/raw/main/scripts/cifsbreak.py
       dest: /root/cifsbreak.py
       mode: '0777'  
   - name: Run python script
-      ansible.builtin.script: /root/cifsbreak.py
+    ansible.builtin.script: /root/cifsbreak.py
       args:
         executable: python3
