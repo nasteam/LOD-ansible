@@ -153,6 +153,11 @@
   - name: Install NetApp PCL python package
       ansible.builtin.pip:
       name: netapp-ontap
+  - name: Download Break Script
+      ansible.builtin.get_url:
+      url: https://github.com/nasteam/LOD-ansible/raw/main/scripts/cifsbreak.py
+      dest: /root/cifsbreak.py
+      mode: '0777'  
   - name: Run python script
       ansible.builtin.script: /root/cifsbreak.py
       args:
