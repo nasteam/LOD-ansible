@@ -157,6 +157,5 @@
       dest: /root/cifsbreak.py
       mode: '0777'  
   - name: Run python script
-    ansible.builtin.script: /root/cifsbreak.py
-      args:
-        executable: python3
+    ansible.builtin.script:
+      cmd: python3 root/cifsbreak.py
