@@ -160,4 +160,4 @@
       mode: '0777'  
   - name: Run python script
     ansible.builtin.script:
-      cmd: python3 root/cifsbreak.py
+      cmd: python3 /root/cifsbreak.py
