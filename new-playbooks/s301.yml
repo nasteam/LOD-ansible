@@ -115,33 +115,6 @@
         statements:
           - sid: FullAccessToUser1
             resources:
-              - "{{ bucket_name }}"
-              - "{{ bucket_name }}"/*
-            actions:
-              - GetObject
-              - PutObject
-              - DeleteObject
-              - ListBucket
-            effect: allow
-            principals:
-              - user1
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      use_rest: always
-      https: true
-      validate_certs: false
-  - name: Create S3 bucket
-    netapp.ontap.na_ontap_s3_buckets:
-      state: present
-      name: "{{ bucket_name }}"
-      comment: bucket-template
-      size: 838860800
-      policy:
-        statements:
-          - sid: FullAccessToUser1
-            resources:
               - svm1-bucket
               - svm1-bucket/*
             actions:
