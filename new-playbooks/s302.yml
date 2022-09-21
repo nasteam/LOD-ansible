@@ -1,0 +1,159 @@
+- 
+  name: S3 Lab 2
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1
+    aggr: cluster1_01_SSD_1
+    vol_name: photoshop
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    ontap_cert_name: svm1_rootca
+    s3_server_name: svm1.demo.netapp.local
+    private_key: /etc/ssl/private/{{ s3_server_name }}.pem
+    csr_path: /etc/ssl/csr/{{ s3_server_name }}.csr
+    bucket_name: svm1-bucket
+    service_policy_name: default-data-files
+  tasks:
+  - name: Create the SSL Private directory
+    ansible.builtin.file:
+      path: /etc/ssl/private
+      state: directory
+      mode: '0755'
+  - name: Create the SSL CSR directory
+    ansible.builtin.file:
+      path: /etc/ssl/csr
+      state: directory
+      mode: '0755'
+  - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+    community.crypto.openssl_privatekey:
+      path: "{{ private_key }}"
+  - name: Generate an OpenSSL Certificate Signing Request
+    community.crypto.openssl_csr:
+      path: "{{ csr_path }}"
+      privatekey_path: "{{ private_key }}"
+      common_name: "{{ s3_server_name }}"
+  - name: Create root-ca cert
+    netapp.ontap.na_ontap_security_certificates:
+      common_name: "{{ ontap_cert_root_common_name }}"
+      name: "{{ ontap_cert_name }}"
+      type: root_ca
+      svm: "{{ vserver }}"
+      expiry_time: P365DT     # one year
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: sign certificate using newly create certificate
+    tags: sign_request
+    netapp.ontap.na_ontap_security_certificates:
+      name: "{{ ontap_cert_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      type: server
+      use_rest: always
+      https: true
+      validate_certs: false    
+      svm: "{{ vserver }}"
+      signing_request: "{{ lookup('file', csr_path) }}"
+      expiry_time: P180DT
+    register: signed_cert
+  - debug:  var=signed_cert.ontap_info.public_certificate
+  - name: Install Certificate
+    netapp.ontap.na_ontap_security_certificates:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false 
+      type: server
+      public_certificate: "{{ signed_cert.ontap_info.public_certificate }}"
+      private_key: "{{ lookup('file', private_key) }}"
+      name: s3_server_cert
+      common_name: "{{ s3_server_name }}"
+      svm: "{{ vserver }}"
+  - name: create or modify s3 service
+    na_ontap_s3_services:
+      state: present
+      name: "{{ s3_server_name }}"
+      vserver: "{{ vserver }}"
+      comment: not enabled
+      enabled: True
+      certificate_name: s3_server_cert
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: create or modify s3 user
+    na_ontap_s3_users:
+      state: present
+      name: user1
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+    register: credentials
+  - debug:  var=credentials
+  - name: Create S3 bucket
+    netapp.ontap.na_ontap_s3_buckets:
+      state: present
+      name: "{{ bucket_name }}"
+      comment: bucket-template
+      size: 838860800
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: Modify single service policy
+    netapp.ontap.na_ontap_service_policy:
+      state: present
+      name: "{{ service_policy_name }}"
+      services:
+        - data_core
+        - data_nfs
+        - data_cifs
+        - data-s3-server
+        - data-fpolicy-client
+        - management-dns-client
+        - management-ad-client
+        - management-ldap-client
+        - management-nis-client
+        - data-dns-server
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: Create and modify a S3 Group
+    netapp.ontap.na_ontap_s3_groups:
+      state: present
+      name: dev-group
+      comment: group for devs
+      users:
+        - name: user1
+      policies:
+        - name: FullAccess
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
