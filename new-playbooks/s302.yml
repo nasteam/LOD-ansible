@@ -127,13 +127,7 @@
         - data_core
         - data_nfs
         - data_cifs
-        - data-s3-server
-        - data-fpolicy-client
-        - management-dns-client
-        - management-ad-client
-        - management-ldap-client
-        - management-nis-client
-        - data-dns-server
+        - data_s3_server
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
