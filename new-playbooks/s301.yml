@@ -136,3 +136,19 @@
       use_rest: always
       https: true
       validate_certs: false
+  - name: Modify single service policy
+    netapp.ontap.na_ontap_service_policy:
+      state: present
+      name: "{{ service_policy_name }}"
+      services:
+        - data_core
+        - data_nfs
+        - data_cifs
+        - data_s3_server
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
