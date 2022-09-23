@@ -16,6 +16,7 @@
     private_key: /etc/ssl/private/{{ s3_server_name }}.pem
     csr_path: /etc/ssl/csr/{{ s3_server_name }}.csr
     bucket_name: svm1-bucket
+    service_policy_name: default-data-files
   tasks:
   - name: Create the SSL Private directory
     ansible.builtin.file:
