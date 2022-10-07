@@ -108,7 +108,7 @@
   collections:
     - netapp.ontap
   tasks:
-  - name: Offline That Bitch
+    - name: Tool We Will Need Later
     na_ontap_volume:
       state: present
       name: dbprod01
@@ -117,6 +117,16 @@
       username: admin
       password: Netapp1!
       junction_path: ''
+      https: true
+      validate_certs: false
+  - name: The Tool
+    na_ontap_volume:
+      state: present
+      name: dbprod01
+      vserver: svm1_cluster1
+      hostname: 192.168.0.101
+      username: admin
+      password: Netapp1!
       https: true
       validate_certs: false
       is_online: no
