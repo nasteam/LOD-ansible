@@ -83,7 +83,7 @@
       base_dn: DC=demo,DC=netapp,DC=com
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
       bind_password: "Netapp1!"
-      ldap_servers:  "{{ ldapserver }}"
+      ldap_servers:  ['192.168.0.253']
       name: "demo"
       schema: "MS-AD-BIS"
       validate_certs: false
