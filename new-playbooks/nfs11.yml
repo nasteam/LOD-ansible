@@ -1,8 +1,9 @@
 - 
-  name: Bad Export
+  name: Windows NFS Sucks
   hosts: localhost
   collections:
     - netapp.ontap
+    - windows.win_feature
   vars:
     hostname: 192.168.0.101
     username: admin
@@ -72,4 +73,8 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
-// TODO: Figure out how to enable NFS on Windblows without breaking something      
+// TODO: Figure out how to enable NFS on Windblows without breaking something
+  - name: Install NFS-Client
+    ansible.windows.win_feature:
+      name: FS-NFS-Client
+      state: present
