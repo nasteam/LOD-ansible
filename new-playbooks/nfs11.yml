@@ -96,6 +96,7 @@
       validate_certs: false
       interface_name: svm1_data_lif_1
       service_policy: nfs11
+      interface_type: ip
 -
   name: Set Up Us The Windows
   hosts: DC1.demo.netapp.com
