@@ -139,7 +139,6 @@
       password: "{{ password }}"
       state: present
       groups:
-       - Domain Admins
        - Domain Users
   - name: Create User
     community.windows.win_domain_user:
