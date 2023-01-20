@@ -81,22 +81,10 @@
       vserver: "{{ vserver }}"
       https: true
       validate_certs: false
-      name: nfs11
+      name: default_data_files
       services:
         - data_core
         - data_nfs
-  - name: LIF Modify
-    na_ontap_interface:
-      state: present
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      vserver: "{{ vserver }}"
-      https: true
-      validate_certs: false
-      interface_name: svm1_data_lif_1
-      service_policy: nfs11
-      interface_type: ip
 -
   name: Set Up Us The Windows
   hosts: DC1.demo.netapp.com
