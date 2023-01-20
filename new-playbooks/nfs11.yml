@@ -3,7 +3,6 @@
   hosts: localhost
   collections:
     - netapp.ontap
-    - windows.win_feature
   vars:
     hostname: 192.168.0.101
     username: admin
@@ -98,8 +97,21 @@
       interface_name: svm1_data_lif_1
       service_policy: nfs11
 // TODO: Figure out how to enable NFS on Windblows without breaking something
+-
+  name: Set Up Us The Windows
+  hosts: DC1.demo.netapp.com
+  collections:
+    - community.windows
+    - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: photoshop
+  tasks:
   - name: Install NFS-Client
     win_feature:
       name: FS-NFS-Client
       state: present
-      
