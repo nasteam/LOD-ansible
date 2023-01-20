@@ -101,5 +101,5 @@
   tasks:
   - name: Install NFS-Client
     win_feature:
-      name: FS-NFS-Client
+      name: NFS-Client
       state: present
