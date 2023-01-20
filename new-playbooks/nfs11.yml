@@ -73,8 +73,33 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+  - name: Service-Policy
+    na_ontap_service_policy:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      https: true
+      validate_certs: false
+      name: nfs11
+      services:
+        - data_core
+        - data_nfs
+  - name: LIF Modify
+    na_ontap_interface:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      https: true
+      validate_certs: false
+      interface_name: svm1_data_lif_1
+      service_policy: nfs11
 // TODO: Figure out how to enable NFS on Windblows without breaking something
   - name: Install NFS-Client
-    ansible.windows.win_feature:
+    win_feature:
       name: FS-NFS-Client
       state: present
+      
