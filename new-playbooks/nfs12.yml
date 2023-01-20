@@ -1,0 +1,187 @@
+-
+  name: Ontap_config1
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: cluster1_01_SSD_1
+    vol_name: data
+    ldapserver: 192.168.0.253
+  tasks:
+  - name: export policy
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      rule_index: 1
+      client_match: 0.0.0.0/0
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: sys
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: default
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      unix_permissions: 755
+      user_id: 0
+      group_id: 0
+      volume_security_style: unix
+-
+  name: Ontap_config2
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.102
+    lif: 192.168.0.250
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster2
+    node: cluster2-01
+    aggr: cluster2_01_SSD_1
+    vol_name: data2
+    ldapserver: 192.168.0.253
+  tasks:
+  - name: Create Aggregates and wait 5 minutes until aggregate is online
+    na_ontap_aggregate:
+      state: present
+      service_state: online
+      name:  "{{ aggr }}"
+      nodes: "{{ node }}"
+      disk_count: 14
+      wait_for_online: True
+      time_out: 300
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create SVM
+    na_ontap_svm:
+      state: present
+      name: "{{ vserver }}"
+#      root_volume: "{{ vserver }}_root"
+#      root_volume_aggregate: "{{ aggr }}"
+#      root_volume_security_style: unix
+      services:
+        cifs:
+          allowed: true
+        fcp:
+          allowed: true
+        nfs:
+          allowed: true
+          enabled: true
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create data interface - REST - NAS
+    na_ontap_interface:
+      state: present
+      vserver: "{{ vserver }}"
+      interface_name: data2
+      home_port: e0c
+      home_node: "{{ node }}"
+      admin_status: up
+      failover_scope: home_node_only
+      service_policy: default-data-files
+      is_auto_revert: true
+      interface_type: ip
+      address: "{{ lif }}"
+      netmask: 255.255.255.0
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: export policy
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      rule_index: 1
+      client_match: 0.0.0.0/0
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: sys
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: default
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      unix_permissions: 755
+      user_id: 0
+      group_id: 0
+      volume_security_style: unix
+-
+  name: CENTOS_SETUP
+  debugger: on_failed
+  hosts: centos01.demo.netapp.com
+  collections:
+    - ansible.posix
+  tasks:
+  - name: Mount Volume
+    ansible.posix.mount:
+      src: 192.168.0.131:/data
+      path: /mnt/data
+      opts: vers=4.1,rw,sync,hard,intr,sec=sys
+      boot: no
+      state: mounted
+      fstype: nfs
+  - name: Create a directory if it does not exist
+    ansible.builtin.file:
+      path: /root/move
+      state: directory
+      mode: '0755'
+  - name: Mount Volume2
+    ansible.posix.mount:
+      src: 192.168.0.250:/data2
+      path: /mnt/data2
+      opts: vers=3,rw,sync,hard,intr,sec=sys
+      boot: no
+      state: mounted
+      fstype: nfs
+  - name: Make file1
+    ansible.builtin.shell: touch  /root/move/newfile`printf '\230'`.txt
