@@ -96,7 +96,6 @@
       validate_certs: false
       interface_name: svm1_data_lif_1
       service_policy: nfs11
-// TODO: Figure out how to enable NFS on Windblows without breaking something
 -
   name: Set Up Us The Windows
   hosts: DC1.demo.netapp.com
