@@ -8,7 +8,7 @@
     username: admin
     password: Netapp1!
     vserver: svm1_cluster1
-    aggr: aggr1
+    aggr: cluster1_01_SSD_1
     vol_name: data
     ldapserver: 192.168.0.253
   tasks:
