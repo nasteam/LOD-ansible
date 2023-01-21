@@ -141,7 +141,12 @@
       share_name: "home"
       https: true
       validate_certs: false
-      share_properties: encrypt_data
+      share_properties: 
+        - encrypt_data
+        - oplocks
+        - browsable
+        - changenotify
+        - show-previous-versions
   - name: CIFS Share Create
     na_ontap_cifs:
       state: present
