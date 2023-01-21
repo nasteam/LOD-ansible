@@ -9,12 +9,12 @@
     password: Netapp1!
     vserver: svm1_cluster1
     aggr: aggr1
-    vol_name: photoshop
+    vol_name: dc_backup
   tasks:
   - name: Export Create
     na_ontap_export_policy:
       state: present
-      name: photoshop_policy
+      name: dc_backup_policy
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -42,7 +42,7 @@
   - name: Export Policy Rule Create
     na_ontap_export_policy_rule:
       state: present
-      name: photoshop_policy
+      name: dc_backup_policy
       vserver: "{{ vserver }}"
       rule_index: 1
       client_match: 0.0.0.0,1.1.1.0/24
@@ -65,7 +65,7 @@
       aggregate_name: "{{ aggr }}"
       size: 1
       size_unit: gb
-      policy: photoshop_policy
+      policy: dc_backup_policy
       junction_path: "/{{ vol_name }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -97,7 +97,7 @@
     password: Netapp1!
     vserver: svm1_cluster1
     aggr: aggr1
-    vol_name: photoshop
+    vol_name: dc_backup
   tasks:
   - name: Install NFS-Client
     win_feature:
