@@ -81,19 +81,7 @@
       vserver: "{{ vserver }}"
       https: true
       validate_certs: false
-      name: default_data_files
-      services:
-        - no_service
-  - name: Service-Policy
-    na_ontap_service_policy:
-      state: present
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      vserver: "{{ vserver }}"
-      https: true
-      validate_certs: false
-      name: default_data_files
+      name: default-data-files
       services:
         - data_core
         - data_nfs
