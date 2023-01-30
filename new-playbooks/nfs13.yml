@@ -86,3 +86,15 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+-
+  name: CENTOS_SETUP
+  debugger: on_failed
+  hosts: centos01.demo.netapp.com
+  collections:
+    - ansible.posix
+  tasks:
+  - name: Create a directory if it does not exist
+    ansible.builtin.file:
+      path: /mnt/data
+      state: directory
+      mode: '0755'
