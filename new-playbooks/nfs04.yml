@@ -1,5 +1,5 @@
 -
-  name: Vol Offline
+  name: NFS04
   hosts: localhost
   collections:
     - netapp.ontap
@@ -103,7 +103,7 @@
       state: mounted
       fstype: nfs
 -
-  name: Offline That Vol
+  name: Shutdown The Government
   hosts: localhost
   collections:
     - netapp.ontap
