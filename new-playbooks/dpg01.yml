@@ -1,4 +1,4 @@
-- 
+-
   name: Configure ONTAP
   hosts: localhost
   collections:
@@ -42,7 +42,7 @@
       username: "{{ username }}"
       password: "{{ password }}"
       https: true
-      validate_certs: false      
+      validate_certs: false
   - name: Export Policy Rule Create
     na_ontap_export_policy_rule:
       state: present
@@ -108,7 +108,7 @@
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
-      password: "{{ password }}"  
+      password: "{{ password }}"
       https: true
       validate_certs: false
   - name: create DNS
@@ -210,14 +210,35 @@
   - name: Source vserver peer create
     na_ontap_vserver_peer:
       state: present
+      peer_vserver: "{{ dst_vserver }}"
+      peer_cluster: cluster2
+      applications: ['snapmirror']
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      peer_options:
+        hostname: "{{ hostname2 }}"
+        user: "{{ username }}"
+        pass: "{{ password }}"
+  - name: Dest vserver peer create
+    na_ontap_vserver_peer:
+      state: present
       peer_vserver: "{{ vserver }}"
       peer_cluster: cluster1
+      applications: ['snapmirror']
       vserver: "{{ dst_vserver }}"
       hostname: "{{ hostname2 }}"
       username: "{{ username }}"
       password: "{{ password }}"
       https: true
       validate_certs: false
+      peer_options:
+        hostname: "{{ hostname }}"
+        user: "{{ username }}"
+        pass: "{{ password }}"
   - name: Export Create
     na_ontap_export_policy:
       state: present
@@ -245,7 +266,7 @@
       username: "{{ username }}"
       password: "{{ password }}"
       https: true
-      validate_certs: false      
+      validate_certs: false
   - name: Export Policy Rule Create
     na_ontap_export_policy_rule:
       state: present
@@ -280,7 +301,7 @@
       https: true
       validate_certs: false
       volume_security_style: ntfs
-  - name: Create SnapMirror relationship 
+  - name: Create SnapMirror relationship
     tags: create_snapmirror
     netapp.ontap.na_ontap_snapmirror:
       state: present
@@ -291,7 +312,8 @@
         cluster: cluster2
         path: "{{ dst_vserver + ':DR_' + vol_name }}"
       create_destination:
-        enabled: true
+        enabled: false
+      initialize: True
       hostname: "{{ hostname2 }}"
       username: "{{ username }}"
       password: "{{ password }}"
