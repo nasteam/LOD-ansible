@@ -192,16 +192,32 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
-  - name: Create SnapMirror relationship - SVM DR (creating and peering destination svm)
-    tags: create_svmdr
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      auto_provision_as: flexgroup
+      size: 10
+      size_unit: gb
+      policy: "{{ policy }}"
+      junction_path: "/{{ "DR_" + vol_name }}"
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      volume_security_style: ntfs
+  - name: Create SnapMirror relationship 
+    tags: create_snapmirror
     netapp.ontap.na_ontap_snapmirror:
       state: present
       source_endpoint:
         cluster: cluster1
-        path: "{{ vserver + ':' }}"
+        path: "{{ vserver + ':' + vol_name }}"
       destination_endpoint:
         cluster: cluster2
-        path: "{{ dst_vserver + ':' }}"
+        path: "{{ dst_vserver + ':DR_' + vol_name }}"
       create_destination:
         enabled: true
       hostname: "{{ hostname2 }}"
