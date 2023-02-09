@@ -211,7 +211,7 @@
     na_ontap_volume:
       state: present
       name: "{{ vol_name }}"
-      vserver: "{{ vserver }}"
+      vserver: "{{ dst_vserver }}"
       auto_provision_as: flexgroup
       size: 10
       size_unit: gb
