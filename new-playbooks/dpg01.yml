@@ -1,0 +1,211 @@
+- 
+  name: Configure ONTAP
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    hostname2: 192.168.0.102
+    username: admin
+    password: Netapp1!
+    vserver: svm2_cluster1
+    aggr: aggr1
+    vol_name: abe
+    cifs_user: dougd
+    dst_vserver: svm1_cluster1-dr
+    policy: abe_policy
+  tasks:
+  - name: Export Create
+    na_ontap_export_policy:
+      state: present
+      name: "{{ policy }}"
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Mod Default Policy
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      protocol: any
+      rule_index: 1
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false      
+  - name: Export Policy Rule Create
+    na_ontap_export_policy_rule:
+      state: present
+      name: "{{ policy }}"
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      rule_index: 2
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: sys
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      auto_provision_as: flexgroup
+      size: 10
+      size_unit: gb
+      policy: "{{ policy }}"
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      volume_security_style: ntfs
+  - name: Create SVM
+    netapp.ontap.na_ontap_svm:
+      state: present
+      name: "{{ vserver }}"
+      services:
+        cifs:
+          allowed: true
+        nfs:
+          allowed: true
+          enabled: true
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create data interface - REST - NAS
+    netapp.ontap.na_ontap_interface:
+      state: present
+      interface_name: cifs1
+      home_port: e0g
+      home_node: cluster1-01
+      admin_status: up
+      failover_scope: default
+      service_policy: default-data-files
+      is_auto_revert: true
+      interface_type: ip
+      address: 192.168.0.135
+      netmask: 255.255.255.0
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"  
+      https: true
+      validate_certs: false
+  - name: create DNS
+    na_ontap_dns:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver:  "{{ vserver }}"
+      domains: demo.netapp.com
+      nameservers: 192.168.0.253
+      skip_validation: true
+      https: true
+      validate_certs: false
+  - name: Create cifs_server
+    netapp.ontap.na_ontap_cifs_server:
+      state: present
+      name: CIFS2
+      vserver: "{{ vserver }}"
+      service_state: started
+      domain: demo.netapp.com
+      admin_user_name: Administrator
+      admin_password: "{{ password }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      path: "/{{ vol_name }}"
+      share_name: "{{ vol_name }}"
+      https: true
+      validate_certs: false
+  - name: Create cluster peer
+    netapp.ontap.na_ontap_cluster_peer:
+      state: present
+      source_intercluster_lifs: 192.168.0.121,192.168.0.122
+      dest_intercluster_lifs: 192.168.0.123,192.168.0.124
+      passphrase: "{{ password }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      peer_options:
+        hostname: "{{ hostname2 }}"
+      encryption_protocol_proposed: tls_psk
+      https: true
+      validate_certs: false
+  - name: Create Aggr1
+    netapp.ontap.na_ontap_aggregate:
+      state: present
+      service_state: online
+      name: aggr1
+      nodes: cluster2-01
+      disk_count: 13
+      wait_for_online: True
+      time_out: 300
+      snaplock_type: non_snaplock
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create Aggr2
+    netapp.ontap.na_ontap_aggregate:
+      state: present
+      service_state: online
+      name: aggr2
+      nodes: cluster2-02
+      disk_count: 13
+      wait_for_online: True
+      time_out: 300
+      snaplock_type: non_snaplock
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create SnapMirror relationship - SVM DR (creating and peering destination svm)
+    tags: create_svmdr
+    netapp.ontap.na_ontap_snapmirror:
+      state: present
+      source_endpoint:
+        cluster: cluster1
+        path: "{{ vserver + ':' }}"
+      destination_endpoint:
+        cluster: cluster2
+        path: "{{ dst_vserver + ':' }}"
+      create_destination:
+        enabled: true
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
