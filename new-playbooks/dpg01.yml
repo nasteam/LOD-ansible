@@ -210,7 +210,7 @@
   - name: Volume Create
     na_ontap_volume:
       state: present
-      name: "{{ vol_name }}"
+      name: "{{ 'DR_' + vol_name }}"
       vserver: "{{ dst_vserver }}"
       auto_provision_as: flexgroup
       size: 10
