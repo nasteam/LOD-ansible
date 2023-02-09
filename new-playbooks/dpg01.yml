@@ -192,6 +192,21 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+  - name: Create SVM
+    netapp.ontap.na_ontap_svm:
+      state: present
+      name: "{{ dst_vserver }}"
+      services:
+        cifs:
+          allowed: true
+        nfs:
+          allowed: true
+          enabled: true
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: Volume Create
     na_ontap_volume:
       state: present
@@ -201,7 +216,7 @@
       size: 10
       size_unit: gb
       policy: "{{ policy }}"
-      junction_path: "/{{ "DR_" + vol_name }}"
+      junction_path: "/{{ 'DR_' + vol_name }}"
       hostname: "{{ hostname2 }}"
       username: "{{ username }}"
       password: "{{ password }}"
