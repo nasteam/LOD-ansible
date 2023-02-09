@@ -207,6 +207,17 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+  - name: Source vserver peer create
+    na_ontap_vserver_peer:
+      state: present
+      peer_vserver: "{{ vserver }}"
+      peer_cluster: cluster1
+      vserver: "{{ dst_vserver }}"
+      hostname: "{{ hostname2 }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: Export Create
     na_ontap_export_policy:
       state: present
