@@ -84,6 +84,7 @@
       command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
   - name: create and apply ldap client
     netapp.ontap.na_ontap_ldap_client:
+      state: present
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
@@ -92,6 +93,7 @@
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
       bind_password: Netapp1!
       ldap_servers: 192.168.0.253
+      use_rest: never
       name: demo
       schema: demo
       validate_certs: false
