@@ -1,0 +1,60 @@
+#
+# netgroup	The netgroup file. Entries look like this:
+#
+#		   netgroup  (host,user,domain)  (host,user,domain) ..
+#
+#		So for example a netgroup for powerusers could be:
+#
+#		   powerusers  (,miquels,) (,torvalds,) (,fubar,)
+#
+#		And an entry in the password file like
+#
+#		   +@powerusers::::::
+#		   +:*:::::/etc/NoShell
+#
+# 		would give access only to the users in "powerusers", while the
+# 		other users would be known to the system but have an invalid
+#		shell AND an invalid password (with Linux, you can also
+#		override the password field).
+#
+
+# powerusers (,miquels,) (,torvalds,) (,fubar,)
+# ourhosts   (picard,,) (enterprise,,) (laforge,,) (Q,,)
+
+dominate        (xenial-smb-188.demo.netapp.com,root,)(nis-deb8-244.demo.netapp.com,root,)
+principate      (xenial-smb-188.demo.netapp.com,,)(nis-deb8-244.demo.netapp.com,,)(nis-rhel8-244.demo.netapp.com,,)(10.10.10.10,,)
+test            (xenial-smb-188,user1,)
+netapp     (xenial-smb-188.demo.netapp.com,,)(nis-deb8-244.demo.netapp.com,,)
+1_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+2_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+3_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+4_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+5_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+6_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+7_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+8_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+9_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+10_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+11_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+12_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+13_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+14_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+15_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+16_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+17_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+18_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+19_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+20_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+21_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+22_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+23_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+24_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+25_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+26_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+27_netgroup (xenial-smb-188.demo.netapp.com.,,)(nis-deb8-244.demo.netapp.com.,,)
+rebel (rhelbox.demo.netapp.com,,)
+papabear (10.10.10.10,-,-)
+wildcard (*,,)
+space_domain (rhelbox.demo.netapp.com,, )
+dash_domain (rhelbox.demo.netapp.com,,-)
+users(,host,)
