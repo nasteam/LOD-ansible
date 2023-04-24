@@ -110,7 +110,7 @@
       groups:
         - Domain Admins
         - Domain Users
-  - name: Map Drive via PS
+  - name: Implement the break
     ansible.windows.win_powershell:
      script: |
-      Set-AdComputer -Identity CIFS1 -KerberosEncryptionTypes " "
+      Set-AdComputer -Identity CIFS1 -KerberosEncryptionType None
