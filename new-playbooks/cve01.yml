@@ -111,7 +111,8 @@
   - name: Implement the break
     ansible.windows.win_powershell:
      script: |
-      Set-AdComputer -Identity CIFS1 -clear msds-supportedencryptiontypes
+      Set-AdComputer -Identity CIFS1 -clear msds-supportedencryptiontypes;
+      New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Kdc\Parameters" -Name "DefaultDomainSupportedEncTypes" -Value 39 -PropertyType DWORD
   - name: Install required updates
     ansible.windows.win_updates:
      category_names: '*'
