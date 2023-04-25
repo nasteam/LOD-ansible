@@ -9,7 +9,8 @@
     username: admin
     password: Netapp1!
     vserver: svm1_cluster1
-    aggr: cluster1_01_SSD_1
+#    aggr: cluster1_01_SSD_1
+    aggr: aggr1
     vol_name: photoshop
     cifs_user: dougd
   tasks:
@@ -97,7 +98,7 @@
     username: DEMO\Administrator
     password: Netapp1!
     vserver: svm1_cluster1
-    aggr: cluster1_01_SSD_1
+#    aggr: cluster1_01_SSD_1
     vol_name: photoshop
   tasks:
   - name: Create User
@@ -114,3 +115,12 @@
     ansible.windows.win_powershell:
      script: |
       Set-AdComputer -Identity CIFS1 -OperatingSystem "Windows Server 2019 Standard" -OperatingSystemVersion "10.0 (17763)";
+  - name: Install required updates
+    ansible.windows.win_updates:
+     category_name:
+       - SecurityUpdates
+     accept_list:
+       - KB5025229
+       - KB5019966
+       - KB5005112
+     _wait: true
