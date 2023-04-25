@@ -124,9 +124,9 @@
        - KB5025229
        - KB5019966
        - KB5005112
-   - name: Verify updates are applied
-     ansible.windows.win_reboot:
-       reboot_timeout: 300
+  - name: Verify updates are applied
+    ansible.windows.win_reboot:
+      reboot_timeout: 300
 - 
   name: Break ONTAP
   hosts: localhost
