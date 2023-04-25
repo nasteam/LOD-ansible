@@ -115,6 +115,7 @@
     ansible.windows.win_powershell:
      script: |
       Set-AdComputer -Identity CIFS1 -OperatingSystem "Windows Server 2019 Standard" -OperatingSystemVersion "10.0 (17763)";
+      Add-DnsServerResourceRecordA -Name "filesrv01" -ZoneName "demo.netapp.com" -IPv4Address "192.168.0.131"
   - name: Install required updates
     ansible.windows.win_updates:
      category_names: '*'
