@@ -114,7 +114,7 @@
       Set-AdComputer -Identity CIFS1 -KerberosEncryptionType None
   - name: Install required updates
     ansible.windows.win_updates:
-     category_names: *
+     category_names: '*'
      accept_list:
        - KB5025229
        - KB5019966
