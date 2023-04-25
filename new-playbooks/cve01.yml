@@ -111,7 +111,7 @@
   - name: Implement the break
     ansible.windows.win_powershell:
      script: |
-      Set-AdComputer -Identity CIFS1 -KerberosEncryptionType None
+      Set-AdComputer -Identity CIFS1 -clear msds-supportedencryptiontypes
   - name: Install required updates
     ansible.windows.win_updates:
      category_names: '*'
