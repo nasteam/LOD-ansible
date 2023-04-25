@@ -119,6 +119,7 @@
   - name: Install required updates
     ansible.windows.win_updates:
      category_names: '*'
+     reboot: yes
      accept_list:
        - KB5025229
        - KB5019966
