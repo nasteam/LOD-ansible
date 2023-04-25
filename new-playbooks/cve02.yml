@@ -137,15 +137,25 @@
     netapp.ontap.na_ontap_cifs_server:
       state: present
       name: cifs1
-      vserver: svm1
       service_state: stopped
       workgroup: demowkgp
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: Improve CIFS
     netapp.ontap.na_ontap_cifs_server:
       state: present
       name: cifs1
-      vserver: svm1
       service_state: stopped
       domain: demo
       admin_user_name: Administrator
       admin_password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
