@@ -133,14 +133,14 @@
     password: Netapp1!
     vserver: svm1_cluster1
   tasks:
-    - name: Fix CIFS
+- name: Fix CIFS
   netapp.ontap.na_ontap_cifs_server:
     state: present
     name: cifs1
     vserver: svm1
     service_state: stopped
     workgroup: demowkgp
-    - name: Improve CIFS
+- name: Improve CIFS
   netapp.ontap.na_ontap_cifs_server:
     state: present
     name: cifs1
