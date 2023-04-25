@@ -123,12 +123,6 @@
        - KB5025229
        - KB5019966
        - KB5005112
-  - name: Create database server record
-    community.windows.win_dns_record:
-      name: "filesrv1.demo.netapp.com"
-      type: "A"
-      value: "192.168.0.131"
-      zone: "demo.netapp.com"
 - 
   name: Break ONTAP
   hosts: localhost
