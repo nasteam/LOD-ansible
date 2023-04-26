@@ -121,3 +121,6 @@
        - KB5019966
        - KB5005112
 #     _wait: true
+  - name: Verify updates are applied
+    ansible.windows.win_reboot:
+      reboot_timeout: 300
