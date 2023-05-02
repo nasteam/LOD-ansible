@@ -104,7 +104,7 @@
       vserver: "{{ vserver }}"
       aggr_list: "{{ aggr_list }}"
       aggr_list_multiplier: 4
-      size: 1
+      size: 4
       size_unit: gb
       policy: volume_policy
       junction_path: "/{{ vol_name }}"
