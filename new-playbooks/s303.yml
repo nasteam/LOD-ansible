@@ -7,8 +7,7 @@
     hostname: 192.168.0.101
     username: admin
     password: Netapp1!
-    vserver: svm1
-    aggr: cluster1_01_SSD_1
+    vserver: svm1_cluster1
     vol_name: s3_flexgroup
     bucket_name: svm1-bucket
     service_policy_name: default-data-files
@@ -100,7 +99,6 @@
       state: present
       name: "{{ vol_name }}"
       vserver: "{{ vserver }}"
-      aggregate_name: "{{ aggr }}"
       auto_provision_as: "flexgroup"
       policy: volume_policy
       junction_path: "/{{ vol_name }}"
