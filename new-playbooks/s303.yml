@@ -9,76 +9,10 @@
     password: Netapp1!
     vserver: svm1
     aggr: cluster1_01_SSD_1
-    vol_name: photoshop
-    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
-    ontap_cert_name: svm1_rootca
-    s3_server_name: svm1.demo.netapp.local
-    private_key: /etc/ssl/private/{{ s3_server_name }}.pem
-    csr_path: /etc/ssl/csr/{{ s3_server_name }}.csr
+    vol_name: s3_flexgroup
     bucket_name: svm1-bucket
     service_policy_name: default-data-files
   tasks:
-  - name: Create the SSL Private directory
-    ansible.builtin.file:
-      path: /etc/ssl/private
-      state: directory
-      mode: '0755'
-  - name: Create the SSL CSR directory
-    ansible.builtin.file:
-      path: /etc/ssl/csr
-      state: directory
-      mode: '0755'
-  - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
-    community.crypto.openssl_privatekey:
-      path: "{{ private_key }}"
-  - name: Generate an OpenSSL Certificate Signing Request
-    community.crypto.openssl_csr:
-      path: "{{ csr_path }}"
-      privatekey_path: "{{ private_key }}"
-      common_name: "{{ s3_server_name }}"
-  - name: Create root-ca cert
-    netapp.ontap.na_ontap_security_certificates:
-      common_name: "{{ ontap_cert_root_common_name }}"
-      name: "{{ ontap_cert_name }}"
-      type: root_ca
-      svm: "{{ vserver }}"
-      expiry_time: P365DT     # one year
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      use_rest: always
-      https: true
-      validate_certs: false
-  - name: sign certificate using newly create certificate
-    tags: sign_request
-    netapp.ontap.na_ontap_security_certificates:
-      name: "{{ ontap_cert_name }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      type: server
-      use_rest: always
-      https: true
-      validate_certs: false    
-      svm: "{{ vserver }}"
-      signing_request: "{{ lookup('file', csr_path) }}"
-      expiry_time: P180DT
-    register: signed_cert
-  - debug:  var=signed_cert.ontap_info.public_certificate
-  - name: Install Certificate
-    netapp.ontap.na_ontap_security_certificates:
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      use_rest: always
-      https: true
-      validate_certs: false 
-      type: server
-      public_certificate: "{{ signed_cert.ontap_info.public_certificate }}"
-      private_key: "{{ lookup('file', private_key) }}"
-      name: s3_server_cert
-      common_name: "{{ s3_server_name }}"
-      svm: "{{ vserver }}"
   - name: create or modify s3 service
     na_ontap_s3_services:
       state: present
@@ -91,7 +25,6 @@
       username: "{{ username }}"
       password: "{{ password }}"
       use_rest: always
-      https: true
       validate_certs: false
   - name: create or modify s3 user
     na_ontap_s3_users:
@@ -152,10 +85,20 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+  - name: Initialize Housing Crisis
+    na_ontap_quota_policy:
+      state: present
+      vserver: "{{ vserver }}"
+      name: s3_policy
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: Volume Create
     na_ontap_volume:
       state: present
-      name: flexgroup
+      name: "{{ vol_name }}"
       vserver: "{{ vserver }}"
       aggregate_name: "{{ aggr }}"
       auto_provision_as: "flexgroup"
@@ -167,17 +110,34 @@
       https: true
       validate_certs: false
       volume_security_style: ntfs
-  - name: Create S3 bucket
-    netapp.ontap.na_ontap_s3_buckets:
+  - name: Generate Spooky Tree
+    netapp.ontap.na_ontap_qtree:
       state: present
-      name: "{{ bucket_name }}"
-      comment: bucket-template
-      size: 838860800
-      vserver: "{{ vserver }}"
+      name: s3test
+      flexvol_name: "{{ vol_name }}"
+      export_policy: volume_policy
+      security_style: ntfs
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
-      use_rest: always
+      vserver: "{{ vserver }}"
+      https: true
+      validate_certs: false
+  - name: Quantitative Easing
+    netapp.ontap.na_ontap_quotas:
+      state: present
+      volume: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      quota_target: s3test
+      set_quota_status: on
+      type: qtree
+      file_limit: 2
+      disk_limit: 3
+      set_quota_status: True
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+#      policy: s3_policy
       https: true
       validate_certs: false
   - name: Modify single service policy
@@ -212,4 +172,12 @@
       use_rest: always
       https: true
       validate_certs: false
-  
+  - name: Create S3 Bucket
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      command: ['object-store-server', 'bucket', 'create', '-type', 'nas', '-bucket', 's3_test', '-nas-path', '/s3_test']
+      privilege: 'admin'
+      https: true
+      validate_certs: false
