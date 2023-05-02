@@ -12,6 +12,9 @@
     bucket_name: svm1-bucket
     service_policy_name: default-data-files
     s3_server_name: s3_cluster1
+    aggr_list:
+      - cluster1_01_SSD_1
+      - cluster1_02_SSD_1
   tasks:
   - name: create or modify s3 service
     na_ontap_s3_services:
@@ -99,7 +102,7 @@
       state: present
       name: "{{ vol_name }}"
       vserver: "{{ vserver }}"
-      aggr_list: "cluster1_01_SSD_1, cluster1_02_SSD_1"
+      aggr_list: "{{ aggr_list }}"
       aggr_list_multiplier: 4
       size: 1
       size_unit: gb
