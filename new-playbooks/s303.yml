@@ -181,7 +181,7 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
-      command: ['object-store-server', 'bucket', 'create', '-type', 'nas', '-bucket', 's3_test', '-nas-path', '/s3_test']
+      command: ['object-store-server', 'bucket', 'create', '-vserver', 'svm1_cluster1', '-type', 'nas', '-bucket', 's3_test', '-nas-path', '/s3_test']
       privilege: 'admin'
       https: true
       validate_certs: false
