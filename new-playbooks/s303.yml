@@ -1,5 +1,5 @@
 - 
-  name: S3 Lab 2
+  name: S3 Lab 3
   hosts: localhost
   collections:
     - netapp.ontap
@@ -12,6 +12,7 @@
     vol_name: s3_flexgroup
     bucket_name: svm1-bucket
     service_policy_name: default-data-files
+    s3_server_name: s3_cluster1
   tasks:
   - name: create or modify s3 service
     na_ontap_s3_services:
@@ -20,7 +21,6 @@
       vserver: "{{ vserver }}"
       comment: not enabled
       enabled: True
-      certificate_name: s3_server_cert
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
