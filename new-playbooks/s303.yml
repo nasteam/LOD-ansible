@@ -132,7 +132,7 @@
       state: present
       volume: "{{ vol_name }}"
       vserver: "{{ vserver }}"
-      quota_target: s3test
+      quota_target: /vol/s3_flexgroup/s3test
       set_quota_status: on
       type: tree
       file_limit: 2
