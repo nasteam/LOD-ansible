@@ -1,1 +1,119 @@
-
+- 
+  name: Yare yare daze
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: nfsprod01
+  tasks:
+  - name: Export Create
+    na_ontap_export_policy:
+      state: present
+      name: tranisition_export_policy01
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Mod Default Policy
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      rule_index: 1
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      protocol: any
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false 
+  - name: Export Policy Rule Create
+    na_ontap_export_policy_rule:
+      state: present
+      name: tranisition_export_policy01
+      vserver: "{{ vserver }}"
+      rule_index: 1
+      client_match: 0.0.0.0/0
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: sys
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: tranisition_export_policy01
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: IPSEC ENABLE MAX
+    netapp.ontap.na_ontap_security_ipsec_config:
+      enabled: True
+      replay_window: 0
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: IPSEC PSK
+    netapp.ontap.na_ontap_security_ipsec_policy:
+      name: ipsec_policy_psk
+      ipspace: Default
+      svm: ansibleSVM
+      authentication_method: psk
+      secret_key: "thisisasecret"
+      action: esp_transport
+      local_endpoint:
+        address: 192.168.0.131
+        netmask: 24
+        port: 201
+      remote_endpoint:
+        address: 192.168.0.61
+        netmask: 24
+        port: 205
+      protocol: tcp
+      enabled: true
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+-
+  name: Set It Up For You
+  hosts: centos01.demo.netapp.com
+  collections:
+    - ansible.builtin
+  tasks:
+  - name: Create Directory
+    ansible.builtin.file:
+      path: /mnt/photoshop
+      owner: root
+      group: root
+      mode: '0755'
+      state: directory
