@@ -122,6 +122,9 @@
       url: https://raw.githubusercontent.com/nasteam/LOD-ansible/main/scripts/ipsec.sh
       dest: /root/ipsec.sh
       mode: '0777'
+  - name: Quick in and out 5 minute adventure
+    pause:
+      minutes: 5
   - name: Pull required conf file
     get_url:
       url: https://raw.githubusercontent.com/nasteam/LOD-ansible/main/restable/ipsec01.conf
