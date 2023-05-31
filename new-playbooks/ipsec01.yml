@@ -117,3 +117,17 @@
       group: root
       mode: '0755'
       state: directory
+  - name: install libreswan
+    ansible.builtin.dnf:
+      name: libreswan
+      state: latest
+  - name: Pull required conf file
+    ansible.builtin.get_url:
+      url: https://raw.githubusercontent.com/nasteam/LOD-ansible/main/restable/ipsec01.conf
+      dest: /etc/ipsec.d/ipsec01.conf
+      mode: '0777'
+  - name: start ipsec
+    ansible.builtin.systemd:
+      name: ipsec
+      enabled: true
+      state: started
