@@ -72,16 +72,16 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
-  - name: IPSEC ENABLE MAX
+  - name: Enable ipsec
     na_ontap_security_ipsec_config:
-      enabled: True
+      enabled: true
       replay_window: 0
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
       https: true
       validate_certs: false
-  - name: IPSEC PSK
+  - name: Ipsec psk config
     na_ontap_security_ipsec_policy:
       name: ipsec_policy_psk
       ipspace: Default
