@@ -85,7 +85,7 @@
     na_ontap_security_ipsec_policy:
       name: ipsec_policy_psk
       ipspace: Default
-      svm: ansibleSVM
+      svm: "{{ vserver }}"
       authentication_method: psk
       secret_key: "thisisasecret"
       action: esp_transport
