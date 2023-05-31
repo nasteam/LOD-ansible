@@ -91,12 +91,10 @@
       action: esp_transport
       local_endpoint:
         address: 192.168.0.131
-        netmask: 24
-        port: 201
+        netmask: 32
       remote_endpoint:
         address: 192.168.0.61
-        netmask: 24
-        port: 205
+        netmask: 32
       protocol: tcp
       enabled: true
       hostname: "{{ hostname }}"
