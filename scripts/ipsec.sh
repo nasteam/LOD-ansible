@@ -1,2 +1,3 @@
 #! /bin/bash
-dnf install libreswan
+yum makecache fast
+yum install libreswan
