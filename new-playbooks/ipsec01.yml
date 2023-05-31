@@ -87,7 +87,7 @@
       ipspace: Default
       svm: "{{ vserver }}"
       authentication_method: psk
-      secret_key: "thisisasecret"
+      secret_key: "Waaaaaaaaaaaaaaaaa!!!"
       action: esp_transport
       local_identity: 192.168.0.131
       remote_identity: 192.168.0.61
