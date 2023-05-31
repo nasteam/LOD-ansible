@@ -73,7 +73,7 @@
       https: true
       validate_certs: false
   - name: IPSEC ENABLE MAX
-    netapp.ontap.na_ontap_security_ipsec_config:
+    na_ontap_security_ipsec_config:
       enabled: True
       replay_window: 0
       hostname: "{{ hostname }}"
@@ -82,7 +82,7 @@
       https: true
       validate_certs: false
   - name: IPSEC PSK
-    netapp.ontap.na_ontap_security_ipsec_policy:
+    na_ontap_security_ipsec_policy:
       name: ipsec_policy_psk
       ipspace: Default
       svm: ansibleSVM
@@ -111,23 +111,23 @@
     - ansible.builtin
   tasks:
   - name: Create Directory
-    ansible.builtin.file:
+    file:
       path: /mnt/photoshop
       owner: root
       group: root
       mode: '0755'
       state: directory
   - name: install libreswan
-    ansible.builtin.dnf:
+    dnf:
       name: libreswan
       state: latest
   - name: Pull required conf file
-    ansible.builtin.get_url:
+    get_url:
       url: https://raw.githubusercontent.com/nasteam/LOD-ansible/main/restable/ipsec01.conf
       dest: /etc/ipsec.d/ipsec01.conf
       mode: '0777'
   - name: start ipsec
-    ansible.builtin.systemd:
+    systemd:
       name: ipsec
       enabled: true
       state: started
