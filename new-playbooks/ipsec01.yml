@@ -124,7 +124,7 @@
       mode: '0777'
   - name: Yare yare daze
       ansible.builtin.command:
-      cmd: ./root/ipsec.sh
+      cmd: /root/ipsec.sh
   - name: Quick in and out 5 minute adventure
     pause:
       minutes: 5
