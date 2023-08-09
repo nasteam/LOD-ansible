@@ -1,0 +1,36 @@
+- 
+  name: Configure ONTAP
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    login: DEMO\Administrator
+  tasks:
+  - name: Mod Default Policy
+    na_ontap_export_policy_rule:
+      state: absent
+      name: default
+      vserver: "{{ vserver }}"
+      rule_index: 1
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Mod CIFS
+    netapp.ontap.na_ontap_cifs_server:
+      state: absent
+      name: CIFS1
+      vserver: "{{ vserver }}"
+      admin_user_name: "{{ login }}"
+      admin_password: "{{ password }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
