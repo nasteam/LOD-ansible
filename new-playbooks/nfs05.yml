@@ -93,19 +93,7 @@
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
       bind_password: Netapp1!
       servers: '192.168.0.253'
-      use_rest: never
-      name: demo
       schema: demo
-      validate_certs: false
-      https: true
-  - name: Enable LDAP on SVM
-    na_ontap_ldap:
-      state:         present
-      name:          'demo'
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      vserver: "{{ vserver }}"
       validate_certs: false
       https: true
   - name: fix nsswitch passwd
