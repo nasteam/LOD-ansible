@@ -92,7 +92,7 @@
       base_dn: DC=demo,DC=netapp,DC=com
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
       bind_password: Netapp1!
-      ldap_servers: 192.168.0.253
+      servers: '192.168.0.253'
       use_rest: never
       name: demo
       schema: demo
