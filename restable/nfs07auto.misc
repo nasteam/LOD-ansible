@@ -1,0 +1,1 @@
+dbprod   -rw,hard,intr,rsize=32178,wsize=32178 svm1_cluster1.demo.netapp.com:/dbprod
