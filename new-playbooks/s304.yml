@@ -1,0 +1,323 @@
+-
+  name: S3 Lab 4 LDAP Fastbind
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: cluster1_01_SSD_1
+    vol_name: photoshop
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    ontap_cert_name: svm1_rootca
+    s3_server_name: svm1.demo.netapp.local
+    win_server_name: dc1.demo.netapp.com
+    private_key: /etc/ssl/private/{{ s3_server_name }}.pem
+    csr_path: /etc/ssl/csr/{{ s3_server_name }}.csr
+    win_private_key: /etc/ssl/private/{{ win_server_name }}.pem
+    win_csr_path: /etc/ssl/csr/{{ win_server_name }}.csr
+    bucket_name: svm1-bucket
+    service_policy_name: default-data-files
+  tasks:
+  - name: Create the SSL Private directory
+    ansible.builtin.file:
+      path: /etc/ssl/private
+      state: directory
+      mode: '0755'
+  - name: Create the SSL CSR directory
+    ansible.builtin.file:
+      path: /etc/ssl/csr
+      state: directory
+      mode: '0755'
+  - name: ONTAP: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+    community.crypto.openssl_privatekey:
+      path: "{{ private_key }}"
+  - name: ONTAP: Generate an OpenSSL Certificate Signing Request
+    community.crypto.openssl_csr:
+      path: "{{ csr_path }}"
+      privatekey_path: "{{ private_key }}"
+      common_name: "{{ s3_server_name }}"
+  - name: Windows: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+    community.crypto.openssl_privatekey:
+      path: "{{ win_private_key }}"
+      passphrase: ansible
+      cipher: auto
+  - name: Windows: Generate an OpenSSL Certificate Signing Request
+    community.crypto.openssl_csr:
+      path: "{{ win_csr_path }}"
+      privatekey_path: "{{ win_private_key }}"
+      common_name: "{{ win_server_name }}"
+      privatekey_passphrase: ansible
+      extended_key_usage:
+        - serverAuth  
+  - name: Create root-ca cert
+    netapp.ontap.na_ontap_security_certificates:
+      common_name: "{{ ontap_cert_root_common_name }}"
+      name: "{{ ontap_cert_name }}"
+      type: root_ca
+      svm: "{{ vserver }}"
+      expiry_time: P365DT     # one year
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: Get RootCA cert from ONTAP
+    netapp.ontap.na_ontap_rest_cli:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      #command: 'security/certificates'
+      command: 'security/certificate'
+      verb: 'GET'
+      params: {'vserver': '{{ vserver }}','type':'root-ca','fields':'public-cert','common-name': '{{ ontap_cert_root_common_name }}'}
+      validate_certs: false
+      https: true
+    register: root_ca_cert
+  - debug: var=root_ca_cert.msg.records[0].public_cert
+  - name: Write ONTAP root CA to local disk
+    local_action: copy content="{{ root_ca_cert.msg.records[0].public_cert }}" dest=/etc/ssl/certs/{{ ontap_cert_root_common_name }}.pem
+  - name: ONTAP: sign certificate using newly create certificate
+    tags: sign_request
+    netapp.ontap.na_ontap_security_certificates:
+      name: "{{ ontap_cert_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      type: server
+      use_rest: always
+      https: true
+      validate_certs: false   
+      svm: "{{ vserver }}"
+      signing_request: "{{ lookup('file', csr_path) }}"
+      expiry_time: P180DT
+    register: signed_cert
+  - debug:  var=signed_cert.ontap_info.public_certificate
+  - name: Windows: sign certificate using newly create certificate
+    tags: sign_request
+    netapp.ontap.na_ontap_security_certificates:
+      name: "{{ ontap_cert_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      type: server
+      use_rest: always
+      https: true
+      validate_certs: false   
+      svm: "{{ vserver }}"
+      signing_request: "{{ lookup('file', win_csr_path) }}"
+      expiry_time: P180DT
+    register: win_signed_cert
+  - name: Write signed certificate to a file
+    local_action: copy content="{{win_signed_cert.ontap_info.public_certificate}}" dest=/etc/ssl/certs/{{ win_server_name }}.pem
+  - name: Generate PKCS#12 file to install on Windows
+    community.crypto.openssl_pkcs12:
+      action: export
+      path: /etc/ssl/{{ win_server_name }}.p12
+      friendly_name: "{{ win_server_name }}"
+      privatekey_path: "{{ win_private_key }}"
+      certificate_path: /etc/ssl/certs/{{ win_server_name }}.pem
+      other_certificates: /etc/ssl/certs/{{ ontap_cert_root_common_name }}.pem
+      privatekey_passphrase: ansible
+      passphrase: ansible
+      #other_certificates: /opt/certs/ca.pem
+      # Note that if /opt/certs/ca.pem contains multiple certificates,
+      # only the first one will be used. See the other_certificates_parse_all
+      # option for changing this behavior.
+      state: present
+  - name: ONTAP: Install Certificate
+    netapp.ontap.na_ontap_security_certificates:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+      type: server
+      public_certificate: "{{ signed_cert.ontap_info.public_certificate }}"
+      private_key: "{{ lookup('file', private_key) }}"
+      name: s3_server_cert
+      common_name: "{{ s3_server_name }}"
+      svm: "{{ vserver }}"
+  - name: create or modify s3 service
+    na_ontap_s3_services:
+      state: present
+      name: "{{ s3_server_name }}"
+      vserver: "{{ vserver }}"
+      comment: not enabled
+      enabled: True
+      certificate_name: s3_server_cert
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: create or modify s3 user
+    na_ontap_s3_users:
+      state: present
+      name: user1
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+    register: credentials
+  - debug:  var=credentials
+  - name: Create S3 bucket
+    netapp.ontap.na_ontap_s3_buckets:
+      state: present
+      name: "{{ bucket_name }}"
+      comment: bucket-template
+      size: 838860800
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: Modify single service policy
+    netapp.ontap.na_ontap_service_policy:
+      state: present
+      name: "{{ service_policy_name }}"
+      services:
+        - data_core
+        - data_nfs
+        - data_cifs
+        - data_s3_server
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: Create and modify a S3 Group
+    netapp.ontap.na_ontap_s3_groups:
+      state: present
+      name: dev-group
+      comment: group for devs
+      users:
+        - name: user1
+      policies:
+        - name: FullAccess
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: Configure NFS
+    na_ontap_nfs:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      nfsv41_pnfs: disabled
+      nfsv41: enabled
+      nfsv40_acl: enabled
+      nfsv41_acl: enabled
+      nfsv4: enabled
+      nfsv4_id_domain: demo.netapp.com
+      validate_certs: false
+      https: true
+  - name: copy new schema
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      privilege: advanced
+      command: ['ldap','client','schema','copy','-schema','MS-AD-BIS','-new-schema-name','demo','-vserver svm1_cluster1']
+      #command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
+  - name: modify new schema
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      privilege: advanced
+      command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
+  - name: create and apply ldap client
+    netapp.ontap.na_ontap_ldap_client:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      base_dn: DC=demo,DC=netapp,DC=com
+      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
+      bind_password: Netapp1!
+      ldap_servers: "192.168.0.253"
+      schema: demo
+      validate_certs: false
+      https: true
+  - name: Enable LDAP on SVM
+    na_ontap_ldap:
+      state:         present
+      name:          "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+  - name: fix nsswitch passwd
+    netapp.ontap.na_ontap_name_service_switch:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      state: present
+      database_type: passwd
+      sources: files,ldap
+  - name: fix nsswitch group
+    netapp.ontap.na_ontap_name_service_switch:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      state: present
+      database_type: group
+      sources: files,ldap
+-
+  name: DC CONFIGURE
+  hosts: DC1.demo.netapp.com
+  collections:
+   - community.windows
+   - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+    win_server_name: dc1.demo.netapp.com
+    win_private_key: /etc/ssl/private/{{ win_server_name }}.pem
+  tasks:
+  - name: Copy cert to Win
+    win_copy:
+      src: /etc/ssl/{{ win_server_name }}.p12
+      dest: "C:\\Temp\\{{ win_server_name }}.p12"
+  - name: Import a certificate
+    ansible.windows.win_certificate_store:
+      path: "C:\\Temp\\{{ win_server_name }}.p12"
+      password: ansible
+      store_type: service
+      store_location: NTDS
+      key_exportable: false
+      key_storage: machine
+      state: present
