@@ -94,8 +94,6 @@
       privatekey_path: "{{ win_private_key }}"
       certificate_path: /etc/ssl/certs/{{ win_server_name }}.pem
       other_certificates: /etc/ssl/certs/{{ ontap_cert_root_common_name }}.pem
-      privatekey_passphrase: ansible
-      passphrase: ansible
       #other_certificates: /opt/certs/ca.pem
       # Note that if /opt/certs/ca.pem contains multiple certificates,
       # only the first one will be used. See the other_certificates_parse_all
