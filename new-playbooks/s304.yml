@@ -274,6 +274,7 @@
       bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
       bind_password: Netapp1!
       ldap_servers: "192.168.0.253"
+      use_start_tls: true
       schema: demo
       validate_certs: false
       https: true
