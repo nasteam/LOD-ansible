@@ -142,6 +142,17 @@
       name: s3_server_cert
       common_name: "{{ s3_server_name }}"
       svm: "{{ vserver }}"
+  - name: delete s3 service
+    na_ontap_s3_services:
+      state: absent
+      name: s3_cluster1
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
   - name: create or modify s3 service
     na_ontap_s3_services:
       state: present
