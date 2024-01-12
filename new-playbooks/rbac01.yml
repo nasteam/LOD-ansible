@@ -185,7 +185,6 @@
   - name: Import a certificate
     ansible.windows.win_certificate_store:
       path: "C:\\{{ win_server_name }}.p12"
-      password: ansible
       store_type: service
       store_location: NTDS
       key_exportable: false
