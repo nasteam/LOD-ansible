@@ -12,10 +12,7 @@
     vol_name: photoshop
     ontap_cert_root_common_name: svm1_ca.demo.netapp.local
     ontap_cert_name: svm1_rootca
-    s3_server_name: svm1.demo.netapp.local
     win_server_name: dc1.demo.netapp.com
-    private_key: /etc/ssl/private/{{ s3_server_name }}.pem
-    csr_path: /etc/ssl/csr/{{ s3_server_name }}.csr
     win_private_key: /etc/ssl/private/{{ win_server_name }}.pem
     win_csr_path: /etc/ssl/csr/{{ win_server_name }}.csr
     bucket_name: svm1-bucket
@@ -31,27 +28,19 @@
       path: /etc/ssl/csr
       state: directory
       mode: '0755'
-  - name: ONTAP Generate an OpenSSL private key with the default values (4096 bits, RSA)
-    community.crypto.openssl_privatekey:
-      path: "{{ private_key }}"
-  - name: ONTAP Generate an OpenSSL Certificate Signing Request
-    community.crypto.openssl_csr:
-      path: "{{ csr_path }}"
-      privatekey_path: "{{ private_key }}"
-      common_name: "{{ s3_server_name }}"
-  - name: Windows Generate an OpenSSL private key with the default values (4096 bits, RSA)
+  - name: Windows Generate an OpenSSL private key with ECC
     community.crypto.openssl_privatekey:
       path: "{{ win_private_key }}"
-      passphrase: ansible
-      cipher: auto
+      type: ECC
+      curve: secp256r1
   - name: Windows Generate an OpenSSL Certificate Signing Request
     community.crypto.openssl_csr:
       path: "{{ win_csr_path }}"
       privatekey_path: "{{ win_private_key }}"
       common_name: "{{ win_server_name }}"
-      privatekey_passphrase: ansible
       extended_key_usage:
-        - serverAuth  
+        - serverAuth
+      subject_alt_name: "DNS:dc1.demo.netapp.com,IP:192.168.0.253"
   - name: Create root-ca cert
     netapp.ontap.na_ontap_security_certificates:
       common_name: "{{ ontap_cert_root_common_name }}"
@@ -70,7 +59,6 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
-      #command: 'security/certificates'
       command: 'security/certificate'
       verb: 'GET'
       params: {'vserver': '{{ vserver }}','type':'root-ca','fields':'public-cert','common-name': '{{ ontap_cert_root_common_name }}'}
@@ -80,21 +68,6 @@
   - debug: var=root_ca_cert.msg.records[0].public_cert
   - name: Write ONTAP root CA to local disk
     local_action: copy content="{{ root_ca_cert.msg.records[0].public_cert }}" dest=/etc/ssl/certs/{{ ontap_cert_root_common_name }}.pem
-  - name: ONTAP sign certificate using newly create certificate
-    tags: sign_request
-    netapp.ontap.na_ontap_security_certificates:
-      name: "{{ ontap_cert_name }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      type: server
-      use_rest: always
-      https: true
-      validate_certs: false   
-      svm: "{{ vserver }}"
-      signing_request: "{{ lookup('file', csr_path) }}"
-      expiry_time: P180DT
-    register: signed_cert
   - debug:  var=signed_cert.ontap_info.public_certificate
   - name: Windows sign certificate using newly create certificate
     tags: sign_request
@@ -164,8 +137,8 @@
       https: true
   - name: Enable LDAP on SVM
     na_ontap_ldap:
-      state:         present
-      name:          "{{ vserver }}"
+      state: present
+      name: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
