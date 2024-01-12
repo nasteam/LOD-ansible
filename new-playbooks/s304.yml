@@ -325,10 +325,10 @@
   - name: Copy cert to Win
     win_copy:
       src: /etc/ssl/{{ win_server_name }}.p12
-      dest: "C:\\Temp\\{{ win_server_name }}.p12"
+      dest: "C:\\%Temp%\\{{ win_server_name }}.p12"
   - name: Import a certificate
     ansible.windows.win_certificate_store:
-      path: "C:\\Temp\\{{ win_server_name }}.p12"
+      path: "C:\\%Temp%\\{{ win_server_name }}.p12"
       password: ansible
       store_type: service
       store_location: NTDS
