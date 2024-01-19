@@ -19,7 +19,7 @@ if  ! test -f "$HOME/.ssh/id_rsa"
         then ansible-galaxy collection install community.windows
         ansible-galaxy collection install ansible.windows
         ansible-galaxy collection install ansible.posix
-        ansible-galaxy collection install netapp.ontap:22.1.0
+        ansible-galaxy collection install netapp.ontap
         ansible-galaxy collection install ogratwicklcs.realmd_ipa_ad
         pip3 install netapp-ontap
         
