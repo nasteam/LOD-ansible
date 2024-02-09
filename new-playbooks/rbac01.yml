@@ -169,7 +169,7 @@
   name: DC CONFIGURE
   hosts: DC1.demo.netapp.com
   collections:
-   - community.windows
+   - microsoft.ad
    - anisble.windows
   vars:
     hostname: 192.168.0.101
@@ -190,3 +190,32 @@
       key_exportable: false
       key_storage: machine
       state: present
+  - name: Create User
+    microsoft.ad.user:
+      name: dougd
+      firstname: Doug
+      surname: Dimmadome
+      password: "{{ password }}"
+      state: present
+      groups:
+        set:
+        - Domain Admins
+        - Domain Users
+      attributes:
+        add:
+          uid: dougd
+          uidNumber: 91302
+          gidNumber: 91302
+  - name: Add Unix attributes to groups
+    microsoft.ad.group:
+      name: Domain Admins
+      scope: global
+      attributes:
+        add:
+          gidNumber: 512
+  - name: Do it again
+    microsoft.ad.group:
+      name: Domain Users
+      scope: global
+        add:
+          gidNumber: 513
