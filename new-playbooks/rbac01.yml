@@ -204,6 +204,7 @@
       attributes:
         add:
           uid: dougd
+        set:
           uidNumber: 91302
           gidNumber: 91302
   - name: Add Unix attributes to groups
@@ -211,11 +212,11 @@
       name: Domain Admins
       scope: global
       attributes:
-        add:
+        set:
           gidNumber: 512
   - name: Do it again
     microsoft.ad.group:
       name: Domain Users
       scope: global
-        add:
+        set:
           gidNumber: 513
