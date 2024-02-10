@@ -21,6 +21,7 @@ if  ! test -f "$HOME/.ssh/id_rsa"
         ansible-galaxy collection install ansible.posix
         ansible-galaxy collection install netapp.ontap:21.22.0
         ansible-galaxy collection install ogratwicklcs.realmd_ipa_ad
+        ansible-galaxy collection install microsoft.ad
         pip3 install netapp-ontap
         
         # prep ssh keys
