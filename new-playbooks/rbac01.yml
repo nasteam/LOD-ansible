@@ -202,8 +202,6 @@
         - Domain Admins
         - Domain Users
       attributes:
-        add:
-          uid: dougd
         set:
           uidNumber: 91302
           gidNumber: 91302
