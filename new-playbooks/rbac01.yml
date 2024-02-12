@@ -190,6 +190,19 @@
       key_exportable: false
       key_storage: machine
       state: present
+  - name: Add Unix attributes to groups
+    microsoft.ad.group:
+      name: Domain Admins
+      scope: global
+      attributes:
+        set:
+          gidNumber: 512
+  - name: Do it again
+    microsoft.ad.group:
+      name: Domain Users
+      scope: global
+        set:
+          gidNumber: 513    
   - name: Create User
     microsoft.ad.user:
       name: dougd
@@ -205,16 +218,3 @@
         set:
           uidNumber: 91302
           gidNumber: 91302
-  - name: Add Unix attributes to groups
-    microsoft.ad.group:
-      name: Domain Admins
-      scope: global
-      attributes:
-        set:
-          gidNumber: 512
-  - name: Do it again
-    microsoft.ad.group:
-      name: Domain Users
-      scope: global
-        set:
-          gidNumber: 513
