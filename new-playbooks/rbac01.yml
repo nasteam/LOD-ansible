@@ -201,6 +201,7 @@
     microsoft.ad.group:
       name: Domain Users
       scope: global
+      attributes:
         set:
           gidNumber: 513    
   - name: Create User
