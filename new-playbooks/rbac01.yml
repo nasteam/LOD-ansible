@@ -165,6 +165,18 @@
       state: present
       database_type: group
       sources: files,ldap
+  - name: ENABLE LDAPS - LOOK IT IS ENABLED
+    netapp.ontap.na_ontap_cifs_server:
+      state: present
+      session_security: seal
+      use_ldaps: True
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      state: present
 -
   name: DC CONFIGURE
   hosts: DC1.demo.netapp.com
