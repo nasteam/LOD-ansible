@@ -167,6 +167,7 @@
       sources: files,ldap
   - name: ENABLE LDAPS - LOOK IT IS ENABLED
     netapp.ontap.na_ontap_cifs_server:
+      name: CIFS1
       state: present
       session_security: seal
       use_ldaps: True
