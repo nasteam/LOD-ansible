@@ -1,5 +1,5 @@
 -
-  name: S3 Lab 4 LDAP Fastbind
+  name: S3 Lab 4 LDAP Fastbind Cert Work
   hosts: localhost
   collections:
     - netapp.ontap
@@ -142,6 +142,55 @@
       name: s3_server_cert
       common_name: "{{ s3_server_name }}"
       svm: "{{ vserver }}"
+-
+  name: DC CONFIGURE
+  hosts: DC1.demo.netapp.com
+  collections:
+   - community.windows
+   - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+    win_server_name: dc1.demo.netapp.com
+    win_private_key: /etc/ssl/private/{{ win_server_name }}.pem
+  tasks:
+  - name: Copy cert to Win
+    win_copy:
+      src: /etc/ssl/{{ win_server_name }}.p12
+      dest: "C:\\LOD\\{{ win_server_name }}.p12"
+  - name: Import a certificate
+    ansible.windows.win_certificate_store:
+      path: "C:\\LOD\\{{ win_server_name }}.p12"
+      password: ansible
+      store_type: service
+      store_location: NTDS
+      key_exportable: false
+      key_storage: machine
+      state: present
+-
+  name: S3 Lab 4 LDAP/S3 configuration
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: cluster1_01_SSD_1
+    vol_name: photoshop
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    ontap_cert_name: svm1_rootca
+    s3_server_name: svm1.demo.netapp.local
+    win_server_name: dc1.demo.netapp.com
+    private_key: /etc/ssl/private/{{ s3_server_name }}.pem
+    csr_path: /etc/ssl/csr/{{ s3_server_name }}.csr
+    win_private_key: /etc/ssl/private/{{ win_server_name }}.pem
+    win_csr_path: /etc/ssl/csr/{{ win_server_name }}.csr
+    bucket_name: svm1-bucket
+    service_policy_name: default-data-files
+  tasks:      
   - name: delete s3 service
     na_ontap_s3_services:
       state: absent
@@ -310,29 +359,3 @@
       state: present
       database_type: group
       sources: files,ldap
--
-  name: DC CONFIGURE
-  hosts: DC1.demo.netapp.com
-  collections:
-   - community.windows
-   - anisble.windows
-  vars:
-    hostname: 192.168.0.101
-    username: DEMO\Administrator
-    password: Netapp1!
-    win_server_name: dc1.demo.netapp.com
-    win_private_key: /etc/ssl/private/{{ win_server_name }}.pem
-  tasks:
-  - name: Copy cert to Win
-    win_copy:
-      src: /etc/ssl/{{ win_server_name }}.p12
-      dest: "C:\\LOD\\{{ win_server_name }}.p12"
-  - name: Import a certificate
-    ansible.windows.win_certificate_store:
-      path: "C:\\LOD\\{{ win_server_name }}.p12"
-      password: ansible
-      store_type: service
-      store_location: NTDS
-      key_exportable: false
-      key_storage: machine
-      state: present
