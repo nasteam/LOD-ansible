@@ -1,0 +1,34 @@
+-
+  name: Set Up Us The Windows
+  hosts: DC1.demo.netapp.com
+  collections:
+    - community.windows
+    - anisble.windows
+    - microsoft.ad
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: photoshop
+  tasks:
+  - name: Add linux computer to Active Directory OU using a windows machine
+    microsoft.ad.computer:
+      name: cifs7m
+      sam_account_name: cifs7m$
+      dns_hostname: cifs7m.demo.netapp.com
+      path: CN=Computers,DC=demo,DC=netapp,DC=com
+      description: 7-mode filer
+      spn:
+        add:
+        - HOST/filer
+        - HOST/filer.demo.netapp.com
+      enabled: yes
+      state: present
+  - name: Create database server alias
+    community.windows.win_dns_record:
+      name: "filer"
+      type: "CNAME"
+      value: "cifs1.demo.netapp.com"
+      zone: "demo.netapp.com"  
