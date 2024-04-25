@@ -125,7 +125,7 @@
       flexvol_name: "{{ vol_name }}"
       security_style: unix
       oplocks: enabled
-      unix_permissions: 0000
+      unix_permissions: 0700
       vserver: "{{ vserver }}"
       unix_user: root
       unix_group: daemon
