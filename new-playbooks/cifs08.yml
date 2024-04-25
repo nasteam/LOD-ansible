@@ -105,7 +105,7 @@
   - name: Create Qtrees.
     na_ontap_qtree:
       state: present
-      name: bill
+      name: mark
       flexvol_name: "{{ vol_name }}"
       security_style: unix
       oplocks: enabled
@@ -121,11 +121,75 @@
   - name: Create Qtrees.
     na_ontap_qtree:
       state: present
-      name: dante
+      name: walter
       flexvol_name: "{{ vol_name }}"
       security_style: unix
       oplocks: enabled
       unix_permissions: 0770
+      vserver: "{{ vserver }}"
+      unix_user: root
+      unix_group: daemon
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create Qtrees.
+    na_ontap_qtree:
+      state: present
+      name: dylan
+      flexvol_name: "{{ vol_name }}"
+      security_style: unix
+      oplocks: enabled
+      unix_permissions: 0777
+      vserver: "{{ vserver }}"
+      unix_user: root
+      unix_group: daemon
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create Qtrees.
+    na_ontap_qtree:
+      state: present
+      name: rusty
+      flexvol_name: "{{ vol_name }}"
+      security_style: unix
+      oplocks: enabled
+      unix_permissions: 0770
+      vserver: "{{ vserver }}"
+      unix_user: root
+      unix_group: daemon
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create Qtrees.
+    na_ontap_qtree:
+      state: present
+      name: helly
+      flexvol_name: "{{ vol_name }}"
+      security_style: unix
+      oplocks: enabled
+      unix_permissions: 0777
+      vserver: "{{ vserver }}"
+      unix_user: root
+      unix_group: daemon
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create Qtrees.
+    na_ontap_qtree:
+      state: present
+      name: irving
+      flexvol_name: "{{ vol_name }}"
+      security_style: unix
+      oplocks: enabled
+      unix_permissions: 0777
       vserver: "{{ vserver }}"
       unix_user: root
       unix_group: daemon
