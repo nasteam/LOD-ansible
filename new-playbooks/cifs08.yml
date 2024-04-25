@@ -1,0 +1,138 @@
+-
+  name: Configure ONTAP
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: vol01
+    cifs_user: dougd
+  tasks:
+  - name: Export Create
+    na_ontap_export_policy:
+      state: present
+      name: volume_policy
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Export Policy Rule Create
+    na_ontap_export_policy_rule:
+      state: present
+      name: volume_policy
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      rule_index: 100
+      ro_rule: any
+      rw_rule: any
+      protocol: cifs
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Mod Default Policy
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      protocol: any
+      rule_index: 100
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: volume_policy
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      volume_security_style: ntfs
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      access_based_enumeration: true
+      path: "/{{ vol_name }}"
+      share_name: "{{ vol_name }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "home"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: volume_policy
+      junction_path: "/home"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      volume_security_style: ntfs
+  - name: Create Qtrees.
+    na_ontap_qtree:
+      state: present
+      name: bill
+      flexvol_name: "{{ vol_name }}"
+      export_policy: policyName
+      security_style: unix
+      oplocks: enabled
+      unix_permissions: 0777
+      vserver: "{{ vserver }}"
+      unix_user: root
+      unix_group: daemon
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create Qtrees.
+    na_ontap_qtree:
+      state: present
+      name: dante
+      flexvol_name: "{{ vol_name }}"
+      export_policy: policyName
+      security_style: unix
+      oplocks: enabled
+      unix_permissions: 0000
+      vserver: "{{ vserver }}"
+      unix_user: root
+      unix_group: daemon
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
