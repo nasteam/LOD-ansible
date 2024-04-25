@@ -109,7 +109,7 @@
       flexvol_name: "{{ vol_name }}"
       security_style: unix
       oplocks: enabled
-      unix_permissions: 0777
+      unix_permissions: ---rwxrwxrwx
       vserver: "{{ vserver }}"
       unix_user: root
       unix_group: daemon
@@ -125,7 +125,7 @@
       flexvol_name: "{{ vol_name }}"
       security_style: unix
       oplocks: enabled
-      unix_permissions: 0770
+      unix_permissions: ---rwx------
       vserver: "{{ vserver }}"
       unix_user: root
       unix_group: daemon
@@ -141,7 +141,7 @@
       flexvol_name: "{{ vol_name }}"
       security_style: unix
       oplocks: enabled
-      unix_permissions: 0777
+      unix_permissions: ---rwxrwxrwx
       vserver: "{{ vserver }}"
       unix_user: root
       unix_group: daemon
@@ -157,7 +157,7 @@
       flexvol_name: "{{ vol_name }}"
       security_style: unix
       oplocks: enabled
-      unix_permissions: 0770
+      unix_permissions: ---rwx------
       vserver: "{{ vserver }}"
       unix_user: root
       unix_group: daemon
@@ -173,7 +173,7 @@
       flexvol_name: "{{ vol_name }}"
       security_style: unix
       oplocks: enabled
-      unix_permissions: 0777
+      unix_permissions: ---rwxrwxrwx
       vserver: "{{ vserver }}"
       unix_user: root
       unix_group: daemon
@@ -189,7 +189,7 @@
       flexvol_name: "{{ vol_name }}"
       security_style: unix
       oplocks: enabled
-      unix_permissions: 0777
+      unix_permissions: ---rwxrwxrwx
       vserver: "{{ vserver }}"
       unix_user: root
       unix_group: daemon
