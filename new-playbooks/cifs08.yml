@@ -134,3 +134,27 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+-
+  name: Set Up Us The Windows
+  hosts: DC1.demo.netapp.com
+  collections:
+    - community.windows
+    - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: photoshop
+  tasks:
+  - name: Create User
+    community.windows.win_domain_user:
+      name: dougd
+      firstname: Doug
+      surname: Dimmadome
+      password: "{{ password }}"
+      state: present
+      groups:
+        - Domain Admins
+        - Domain Users
