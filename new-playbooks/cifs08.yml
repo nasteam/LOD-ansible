@@ -107,7 +107,6 @@
       state: present
       name: bill
       flexvol_name: "{{ vol_name }}"
-      export_policy: policyName
       security_style: unix
       oplocks: enabled
       unix_permissions: 0777
@@ -124,7 +123,6 @@
       state: present
       name: dante
       flexvol_name: "{{ vol_name }}"
-      export_policy: policyName
       security_style: unix
       oplocks: enabled
       unix_permissions: 0000
