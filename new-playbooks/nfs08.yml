@@ -214,6 +214,7 @@
   - name: Install pexpect python package
     pip:
       name: pexpect
+      extra_args: "--trusted-host pypi.org --trusted-host pypi.python.org"
 
   - name: Join to Active Directory domain
     realm_join:
