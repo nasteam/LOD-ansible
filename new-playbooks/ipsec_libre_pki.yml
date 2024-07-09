@@ -13,11 +13,11 @@
     ontap_cert_root_common_name: svm1_ca.demo.netapp.local
     ontap_cert_name: svm1_rootca
     ipsec_ontap_name: svm1.demo.netapp.local
-    centos_name: dc1.demo.netapp.com
+    rhel_name: rhel1.demo.netapp.local
     private_key: /etc/ssl/private/{{ ipsec_ontap_name }}.pem
     csr_path: /etc/ssl/csr/{{ ipsec_ontap_name }}.csr
-    centos_private_key: /etc/ssl/private/{{ centos_name }}.pem
-    centos_csr_path: /etc/ssl/csr/{{ centos_name }}.csr
+    rhel_private_key: /etc/ssl/private/{{ rhel_name }}.pem
+    rhel_csr_path: /etc/ssl/csr/{{ rhel_name }}.csr
     bucket_name: svm1-bucket
     service_policy_name: default-data-files
     cert_name: svm1_ipsec
@@ -40,16 +40,16 @@
       path: "{{ csr_path }}"
       privatekey_path: "{{ private_key }}"
       common_name: "{{ ipsec_ontap_name }}"
-  - name: Centos Generate an OpenSSL private key with the default values (4096 bits, RSA)
+  - name: RHEL Generate an OpenSSL private key with the default values (4096 bits, RSA)
     community.crypto.openssl_privatekey:
-      path: "{{ centos_private_key }}"
+      path: "{{ rhel_private_key }}"
       passphrase: ansible
       cipher: auto
-  - name: Centos Generate an OpenSSL Certificate Signing Request
+  - name: RHEL Generate an OpenSSL Certificate Signing Request
     community.crypto.openssl_csr:
-      path: "{{ centos_csr_path }}"
-      privatekey_path: "{{ centos_private_key }}"
-      common_name: "{{ centos_name }}"
+      path: "{{ rhel_csr_path }}"
+      privatekey_path: "{{ rhel_private_key }}"
+      common_name: "{{ rhel_name }}"
       privatekey_passphrase: ansible
       extended_key_usage:
         - serverAuth  
@@ -97,7 +97,7 @@
       expiry_time: P180DT
     register: signed_cert
   - debug:  var=signed_cert.ontap_info.public_certificate
-  - name: Centos sign certificate using newly create certificate
+  - name: RHEL sign certificate using newly create certificate
     tags: sign_request
     netapp.ontap.na_ontap_security_certificates:
       name: "{{ ontap_cert_name }}"
@@ -109,18 +109,18 @@
       https: true
       validate_certs: false   
       svm: "{{ vserver }}"
-      signing_request: "{{ lookup('file', centos_csr_path) }}"
+      signing_request: "{{ lookup('file', rhel_csr_path) }}"
       expiry_time: P180DT
-    register: centos_signed_cert
+    register: rhel_signed_cert
   - name: Write signed certificate to a file
-    local_action: copy content="{{centos_signed_cert.ontap_info.public_certificate}}" dest=/etc/ssl/certs/{{ centos_name }}.pem
-  - name: Generate PKCS#12 file to install on Centos
+    local_action: copy content="{{rhel_signed_cert.ontap_info.public_certificate}}" dest=/etc/ssl/certs/{{ rhel_name }}.pem
+  - name: Generate PKCS#12 file to install on RHEL
     community.crypto.openssl_pkcs12:
       action: export
-      path: /etc/ssl/{{ centos_name }}.p12
-      friendly_name: "{{ centos_name }}"
-      privatekey_path: "{{ centos_private_key }}"
-      certificate_path: /etc/ssl/certs/{{ centos_name }}.pem
+      path: /etc/ssl/{{ rhel_name }}.p12
+      friendly_name: "{{ rhel_name }}"
+      privatekey_path: "{{ rhel_private_key }}"
+      certificate_path: /etc/ssl/certs/{{ rhel_name }}.pem
       other_certificates: /etc/ssl/certs/{{ ontap_cert_root_common_name }}.pem
       privatekey_passphrase: ansible
       passphrase: ansible
@@ -159,11 +159,11 @@
     ontap_cert_root_common_name: svm1_ca.demo.netapp.local
     ontap_cert_name: svm1_rootca
     ipsec_ontap_name: svm1.demo.netapp.local
-    centos_name: dc1.demo.netapp.com
+    rhel_name: rhel1.demo.netapp.local
     private_key: /etc/ssl/private/{{ ipsec_ontap_name }}.pem
     csr_path: /etc/ssl/csr/{{ ipsec_ontap_name }}.csr
-    centos_private_key: /etc/ssl/private/{{ centos_name }}.pem
-    centos_csr_path: /etc/ssl/csr/{{ centos_name }}.csr
+    rhel_private_key: /etc/ssl/private/{{ rhel_name }}.pem
+    rhel_csr_path: /etc/ssl/csr/{{ rhel_name }}.csr
     bucket_name: svm1-bucket
     service_policy_name: default-data-files
     cert_name: svm1_ipsec
@@ -176,7 +176,8 @@
       password: "{{ password }}"
       use_rest: always
       https: true
-      name: "{{ cert_name }}"
+      validate_certs: false
+      name: svm1_ca.demo.netapp.local
   - name: Create security IPsec policy with certificates.
     netapp.ontap.na_ontap_security_ipsec_policy:
       svm: "{{ vserver }}"
@@ -185,9 +186,13 @@
       password: "{{ password }}"
       use_rest: always
       https: true
+      validate_certs: false
       name: ipsec_policy_pki
       ipspace: Default
+      authentication_method: pki
       certificate: "{{ cert_name }}"
+      local_identity: 192.168.0.131
+      remote_identity: CN=rhel1.demo.netapp.local
       local_endpoint:
         address: 192.168.0.131
         netmask: 24
@@ -205,7 +210,9 @@
     - ansible.builtin
   vars:
     ontap_cert_root_common_name: svm1_ca.demo.netapp.local
-    pkcs12_path: /etc/ssl/{{ centos_name }}.p12
+    rhel_name: rhel1.demo.netapp.local
+    privatekey_passphrase: ansible
+    pkcs12_path: /etc/ssl/{{ rhel_name }}.p12
   tasks:
   - name: Create Directory
     file:
@@ -222,11 +229,6 @@
   - name: Install Libreswan
     yum:
       name: libreswan
-#    command:
-#      cmd: sh /root/ipsec.sh
-#  - name: Quick in and out 5 minute adventure
-#    pause:
-#      minutes: 5
   - name: import rootca
     command:
       cmd: "certutil -d sql:/etc/ipsec.d -A -n rootCA -t C,C,p -a -i /etc/ssl/certs/{{ ontap_cert_root_common_name }}.pem"
