@@ -167,6 +167,7 @@
     bucket_name: svm1-bucket
     service_policy_name: default-data-files
     cert_name: svm1_ipsec
+  tasks:
   - name: Add IPsec CA certificate to svm.
     netapp.ontap.na_ontap_security_ipsec_ca_certificate:
       svm: "{{ vserver }}"
