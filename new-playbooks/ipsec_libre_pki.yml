@@ -202,6 +202,16 @@
         netmask: 24
         port: 0-0
       protocol: tcp
+  - name: Enable IPSEC
+    netapp.ontap.na_ontap_security_ipsec_config:
+      svm: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+      enabled: True
 
 -
   name: Configure client
