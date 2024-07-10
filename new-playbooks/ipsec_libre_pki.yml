@@ -204,7 +204,6 @@
       protocol: tcp
   - name: Enable IPSEC
     netapp.ontap.na_ontap_security_ipsec_config:
-      svm: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
