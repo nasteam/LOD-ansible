@@ -17,15 +17,25 @@ if ! yum list installed ansible >/dev/null 2>&1; then
     # Install ansible package
     yum install -y ansible
 
+    # Grab python version
+    # Run the ansible command and capture the output
+    ansible_output=$(ansible --version)
+
+    # Extract the Python version using regex
+    python_version=$(echo "$ansible_output" | grep -oP  'python version.+\K\((.*?)\)'|tr -d '()')
+    echo "$python_version"
+
+
     # Install additional dependencies
-    curl -sS https://bootstrap.pypa.io/get-pip.py | /usr/bin/python3.11
-    /usr/bin/python3.11 -m pip install requests
-    /usr/bin/python3.11 -m pip install NetApp-Lib
+    curl -sS https://bootstrap.pypa.io/get-pip.py | $python_version
+    $python_version -m pip install requests
+    $python_version -m pip install NetApp-Lib
 
     echo "Ansible Installation completed."
 else
     echo "ansible package is already installed."
 fi
+
 
 if  ! test -f "$HOME/.ssh/id_rsa"
         # ensure required collections are installed. ansible.windows and ansible.posix are redundant, but purple text isn't a bad thing
