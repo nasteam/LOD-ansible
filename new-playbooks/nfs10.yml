@@ -176,9 +176,9 @@
     lineinfile:
       path: /etc/idmapd.conf
       line: Domain = demo.netapp.com
-  - name: Restart service rpcidmapd
+  - name: Restart service nfs-idmapd
     ansible.builtin.service:
-      name: rpcidmapd
+      name: nfs-idmapd
       state: restarted
   - name: Install the latest version of realmd and dependancies and pip
     ansible.builtin.package:
