@@ -62,7 +62,6 @@
       nfsv41_acl: enabled
       nfsv4: enabled
       nfsv4_id_domain: demo.netapp.com
-      use_rest: never
       validate_certs: false
       https: true
   - name: Set nfs server Extended Auth
