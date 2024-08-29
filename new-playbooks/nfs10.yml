@@ -183,11 +183,13 @@
   - name: Install the latest version of realmd and dependancies and pip
     ansible.builtin.package:
      name:
+       - krb5-workstation
        - realmd
        - oddjob
        - oddjob-mkhomedir
        - sssd
        - samba-common-tools
+       - python3-pip
        - python2-pip
      state: latest
 
