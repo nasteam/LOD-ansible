@@ -17,6 +17,9 @@ if ! yum list installed ansible >/dev/null 2>&1; then
     # Install ansible package
     yum install -y ansible
 
+    # Make sure NFS is installed
+    dnf install -y nfs-utils
+
     # Grab python version
     # Run the ansible command and capture the output
     ansible_output=$(ansible --version)
