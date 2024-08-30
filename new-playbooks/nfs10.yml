@@ -124,38 +124,61 @@
   name: DC CONFIGURE
   hosts: DC1.demo.netapp.com
   collections:
-   - community.windows
+   - microsoft.ad
    - anisble.windows
   vars:
     hostname: 192.168.0.101
     username: DEMO\Administrator
     password: Netapp1!
-  tasks:
-  - name: Create User
-    community.windows.win_domain_user:
+  - name: Add Unix attributes to groups
+    microsoft.ad.group:
+      name: Domain Admins
+      scope: global
+      attributes:
+        set:
+          gidNumber: 512
+  - name: Do it again
+    microsoft.ad.group:
+      name: Domain Users
+      scope: global
+      attributes:
+        set:
+          gidNumber: 513    
+  - name: Create User 1
+    microsoft.ad.user:
       name: dougd
       firstname: Doug
       surname: Dimmadome
       password: "{{ password }}"
       state: present
       groups:
-       - Domain Users
-  - name: Create User
-    community.windows.win_domain_user:
+        set:
+        - Domain Admins
+        - Domain Users
+      attributes:
+        set:
+          uidNumber: 91302
+          gidNumber: 91302
+  - name: Create User 2
+    microsoft.ad.user:
       name: franks
       firstname: Frank
       surname: Sinatra
       password: "{{ password }}"
       state: present
       groups:
-       - Domain Users
+        set:
+        - Domain Users
+      attributes:
+        set:
+          uidNumber: 121215
+          gidNumber: 121215
 -
   name: CENTOS_SETUP
   debugger: on_failed
   hosts: centos01.demo.netapp.com
   collections:
     - ansible.posix
-    - ogratwicklcs.realmd_ipa_ad
   tasks:
   - name: Mount Volume
     ansible.posix.mount:
@@ -201,31 +224,3 @@
       responses:
         "Password for Administrator@DEMO.NETAPP.COM: ":
             - Netapp1!
-  - name: Update domain user with GID
-    community.general.ldap_attrs:
-      dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
-      attributes:
-        gidNumber: 768400513
-      state: exact
-      server_uri: ldap://DC1.demo.netapp.com/
-      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
-      bind_pw: Netapp1!
-  - name: Update domain admin with GID
-    community.general.ldap_attrs:
-      dn: CN=Domain Admins,CN=Users,DC=demo,DC=netapp,DC=com
-      attributes:
-        gidNumber: 768400512
-      state: exact
-      server_uri: ldap://DC1.demo.netapp.com/
-      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
-      bind_pw: Netapp1!
-  - name: Update dougd with uid
-    community.general.ldap_attrs:
-      dn: CN=dougd,CN=Users,DC=demo,DC=netapp,DC=com
-      attributes:
-        uidNumber: 768401125
-        gidNumber: 768400513
-      state: exact
-      server_uri: ldap://DC1.demo.netapp.com/
-      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
-      bind_pw: Netapp1!
