@@ -192,14 +192,12 @@
        - python3-pip
        - python2-pip
      state: latest
-
   - name: Install pexpect python package
     pip:
       name: pexpect
-
   - name: Join to Active Directory domain
     realm_join:
-      domain: demo.netapp.com
+      domain: DEMO.NETAPP.COM
       state: present
       username: Administrator
       password: Netapp1!
