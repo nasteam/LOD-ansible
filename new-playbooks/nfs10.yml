@@ -196,11 +196,11 @@
     pip:
       name: pexpect
   - name: Join to Active Directory domain
-    realm_join:
-      domain: DEMO.NETAPP.COM
-      state: present
-      username: Administrator
-      password: Netapp1!
+    ansible.builtin.expect:
+      command: realm join -U Administrator DEMO.NETAPP.COM
+      responses:
+        "Password for Administrator:":
+            - Netapp1!
   - name: Update domain user with GID
     community.general.ldap_attrs:
       dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
