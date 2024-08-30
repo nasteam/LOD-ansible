@@ -199,7 +199,7 @@
     ansible.builtin.expect:
       command: realm join -U Administrator DEMO.NETAPP.COM
       responses:
-        "Password for Administrator:":
+        "Password for Administrator@DEMO.NETAPP.COM: ":
             - Netapp1!
   - name: Update domain user with GID
     community.general.ldap_attrs:
