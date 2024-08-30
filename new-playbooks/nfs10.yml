@@ -124,8 +124,8 @@
   name: DC CONFIGURE
   hosts: DC1.demo.netapp.com
   collections:
-   - microsoft.ad
-   - anisble.windows
+    - microsoft.ad
+    - anisble.windows
   vars:
     hostname: 192.168.0.101
     username: DEMO\Administrator
