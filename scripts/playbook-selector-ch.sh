@@ -43,6 +43,7 @@ fi
 if  ! test -f "$HOME/.ssh/id_rsa"
         # ensure required collections are installed. ansible.windows and ansible.posix are redundant, but purple text isn't a bad thing
         then ansible-galaxy collection install community.windows
+        anisble-galaxy collection install microsoft.ad
         ansible-galaxy collection install ansible.windows
         ansible-galaxy collection install ansible.posix
         ansible-galaxy collection install netapp.ontap:22.8.3
