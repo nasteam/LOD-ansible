@@ -130,6 +130,7 @@
     hostname: 192.168.0.101
     username: DEMO\Administrator
     password: Netapp1!
+    win_server_name: dc1.demo.netapp.com
   - name: Add Unix attributes to groups
     microsoft.ad.group:
       name: Domain Admins
