@@ -155,7 +155,6 @@
       state: present
       groups:
         set:
-        - Domain Admins
         - Domain Users
       attributes:
         set:
