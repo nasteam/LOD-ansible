@@ -8,8 +8,8 @@
     username: admin
     password: Netapp1!
     vserver: svm1_cluster1
-    aggr: aggr1
-    vol_name: cluster1_01_SSD_1
+    aggr: cluster1_01_SSD_1
+    vol_name: data
   tasks:
   - name: export policy
     na_ontap_export_policy_rule:
