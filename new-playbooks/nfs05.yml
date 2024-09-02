@@ -155,6 +155,7 @@
       groups:
         set:
         - Domain Users
+        - Domain Admins
       attributes:
         set:
           uidNumber: 768401126
