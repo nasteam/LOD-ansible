@@ -137,14 +137,14 @@
       scope: global
       attributes:
         set:
-          gidNumber: 512
+          gidNumber: 768400512
   - name: Do it again
     microsoft.ad.group:
       name: Domain Users
       scope: global
       attributes:
         set:
-          gidNumber: 513    
+          gidNumber: 768400513    
   - name: Create User 1
     microsoft.ad.user:
       name: dougd
@@ -157,8 +157,8 @@
         - Domain Users
       attributes:
         set:
-          uidNumber: 91302
-          gidNumber: 91302
+          uidNumber: 768401126
+          gidNumber: 768401126
   - name: Create User 2
     microsoft.ad.user:
       name: franks
@@ -171,8 +171,8 @@
         - Domain Users
       attributes:
         set:
-          uidNumber: 121215
-          gidNumber: 121215
+          uidNumber: 768401127
+          gidNumber: 768401127
 -
   name: CENTOS_SETUP
   debugger: on_failed
