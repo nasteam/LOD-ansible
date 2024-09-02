@@ -8,7 +8,7 @@
     username: admin
     password: Netapp1!
     vserver: svm1_cluster1
-    aggr: aggr1
+    aggr: cluster1_01_SSD_1
     vol_name: data
   tasks:
   - name: export policy
@@ -123,23 +123,56 @@
   name: DC CONFIGURE
   hosts: DC1.demo.netapp.com
   collections:
-   - community.windows
-   - anisble.windows
+    - microsoft.ad
+    - anisble.windows
   vars:
     hostname: 192.168.0.101
     username: DEMO\Administrator
     password: Netapp1!
+    win_server_name: dc1.demo.netapp.com
   tasks:
-  - name: Create User
-    community.windows.win_domain_user:
+  - name: Add Unix attributes to groups
+    microsoft.ad.group:
+      name: Domain Admins
+      scope: global
+      attributes:
+        set:
+          gidNumber: 512
+  - name: Do it again
+    microsoft.ad.group:
+      name: Domain Users
+      scope: global
+      attributes:
+        set:
+          gidNumber: 513    
+  - name: Create User 1
+    microsoft.ad.user:
       name: dougd
       firstname: Doug
       surname: Dimmadome
       password: "{{ password }}"
       state: present
       groups:
-       - Domain Admins
-       - Domain Users
+        set:
+        - Domain Users
+      attributes:
+        set:
+          uidNumber: 91302
+          gidNumber: 91302
+  - name: Create User 2
+    microsoft.ad.user:
+      name: franks
+      firstname: Frank
+      surname: Sinatra
+      password: "{{ password }}"
+      state: present
+      groups:
+        set:
+        - Domain Users
+      attributes:
+        set:
+          uidNumber: 121215
+          gidNumber: 121215
 -
   name: CENTOS_SETUP
   debugger: on_failed
@@ -166,55 +199,28 @@
     lineinfile:
       path: /etc/idmapd.conf
       line: Domain = demo.netapp.com
-  - name: Restart service rpcidmapd
+  - name: Restart service nfs-idmapd
     ansible.builtin.service:
-      name: rpcidmapd
+      name: nfs-idmapd
       state: restarted
   - name: Install the latest version of realmd and dependancies and pip
     ansible.builtin.package:
      name:
+       - krb5-workstation
        - realmd
        - oddjob
        - oddjob-mkhomedir
        - sssd
        - samba-common-tools
+       - python3-pip
        - python2-pip
      state: latest
-
   - name: Install pexpect python package
     pip:
       name: pexpect
-
   - name: Join to Active Directory domain
-    realm_join:
-      domain: demo.netapp.com
-      state: present
-      username: Administrator
-      password: Netapp1!
-  - name: Update domain user with GID
-    community.general.ldap_attrs:
-      dn: CN=Domain Users,CN=Users,DC=demo,DC=netapp,DC=com
-      attributes:
-        gidNumber: 768400513
-      state: exact
-      server_uri: ldap://DC1.demo.netapp.com/
-      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
-      bind_pw: Netapp1!
-  - name: Update domain admin with GID
-    community.general.ldap_attrs:
-      dn: CN=Domain Admins,CN=Users,DC=demo,DC=netapp,DC=com
-      attributes:
-        gidNumber: 768400512
-      state: exact
-      server_uri: ldap://DC1.demo.netapp.com/
-      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
-      bind_pw: Netapp1!
-  - name: Update dougd with GID
-    community.general.ldap_attrs:
-      dn: CN=dougd,CN=Users,DC=demo,DC=netapp,DC=com
-      attributes:
-        uidNumber: 768401125
-      state: exact
-      server_uri: ldap://DC1.demo.netapp.com/
-      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
-      bind_pw: Netapp1!
+    ansible.builtin.expect:
+      command: realm join -U Administrator DEMO.NETAPP.COM
+      responses:
+        "Password for Administrator@DEMO.NETAPP.COM: ":
+            - Netapp1!
