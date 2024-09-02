@@ -214,6 +214,7 @@
        - samba-common-tools
        - python3-pip
        - python2-pip
+       - nfs4-acl-tools
      state: latest
   - name: Install pexpect python package
     pip:
