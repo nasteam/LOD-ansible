@@ -158,14 +158,14 @@
       scope: global
       attributes:
         set:
-          gidNumber: 512
+          gidNumber: 768400512
   - name: Do it again
     microsoft.ad.group:
       name: Domain Users
       scope: global
       attributes:
         set:
-          gidNumber: 513    
+          gidNumber: 768400513    
   - name: Create User 1
     microsoft.ad.user:
       name: dougd
@@ -179,8 +179,8 @@
         - Domain Admins
       attributes:
         set:
-          uidNumber: 91302
-          gidNumber: 91302
+          uidNumber: 768401126
+          gidNumber: 768401126
   - name: Create User 2
     microsoft.ad.user:
       name: franks
