@@ -1,0 +1,128 @@
+# NFS client that was mounted to /path before the unmount/remount on the storage side will be able to continue to access data on volume1 even though it is not accessible to any new user.  they will think that they are writing to /path when in reality they will not be mounted to the correct file system.
+
+---
+- name: Ontap_config
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: cluster1_01_SSD_1
+    vol1_name: volume1
+    vol2_name: volume2
+  tasks:
+  - name: Create Volume1
+    na_ontap_volume:
+      state: present
+      name: "{{ vol1_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: default
+      junction_path: "/path"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      unix_permissions: 755
+      user_id: 0
+      group_id: 0
+      volume_security_style: unix
+
+  - name: Create Volume2
+    na_ontap_volume:
+      state: present
+      name: "{{ vol2_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: default
+      junction_path: "/volume2"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      unix_permissions: 755
+      user_id: 0
+      group_id: 0
+      volume_security_style: unix
+
+  - name: Configure NFS
+    na_ontap_nfs:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      nfsv41_pnfs: disabled
+      nfsv41: enabled
+      nfsv40_acl: enabled
+      nfsv41_acl: enabled
+      nfsv4: enabled
+      nfsv4_id_domain: demo.netapp.com
+      use_rest: never
+      validate_certs: false
+      https: true
+
+  - name: Unmount Volume1
+    na_ontap_volume:
+      state: present
+      name: "{{ vol1_name }}"
+      vserver: "{{ vserver }}"
+      junction_path: ""
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+
+  - name: Mount Volume2 to /path
+    na_ontap_volume:
+      state: present
+      name: "{{ vol2_name }}"
+      vserver: "{{ vserver }}"
+      junction_path: "/path"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+
+- name: CENTOS_SETUP
+  hosts: centos01.demo.netapp.com
+  collections:
+    - ansible.posix
+  tasks:
+  - name: Mount Volume
+    ansible.posix.mount:
+      src: 192.168.0.131:/path
+      path: /mnt/data
+      opts: vers=4.1,rw,sync,hard,intr,sec=sys
+      boot: no
+      state: mounted
+      fstype: nfs
+
+  - name: Insert a line at the end of a file. #idmapd.conf
+    lineinfile:
+      path: /etc/idmapd.conf
+      line: Domain = demo.netapp.com
+
+  - name: Restart service nfs-idmapd
+    ansible.builtin.service:
+      name: nfs-idmapd
+      state: restarted
+
+  - name: Create a test file in /mnt/data
+    ansible.builtin.command:
+      cmd: "echo 'This is a test file' > /mnt/data/testfile.txt"
+
+  - name: Verify the test file exists
+    ansible.builtin.command:
+      cmd: "cat /mnt/data/testfile.txt"
