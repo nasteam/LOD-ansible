@@ -12,6 +12,28 @@
     aggr: cluster1_01_SSD_1
     vol_name: pizza_plans
   tasks:
+  - name: Grow aggr0-01
+    netapp.ontap.na_ontap_aggregate:
+      state: present
+      name: "aggr0_cluster1_01"
+      disk_count: 1
+      nodes: "cluster1-01"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Grow aggr0-02
+    netapp.ontap.na_ontap_aggregate:
+      state: present
+      name: "aggr0_cluster1_02"
+      disk_count: 1
+      nodes: "cluster1-02"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
   - name: Export Create
     na_ontap_export_policy:
       state: present
