@@ -1,4 +1,4 @@
-# NFS Auditing - missing ACE? Incorrect ACE?
+# NFS Auditing - Incorrect ACE? Missing ACE?
 - 
   name: ACTIVATE CRUNCH EFFECT
   hosts: localhost
@@ -9,7 +9,7 @@
     username: admin
     password: Netapp1!
     vserver: svm1_cluster1
-    aggr: aggr1
+    aggr: cluster1_01_SSD_1
     vol_name: pizza_plans
   tasks:
   - name: Export Create
@@ -47,10 +47,10 @@
       vserver: "{{ vserver }}"
       rule_index: 1
       client_match: 0.0.0.0/0
-      ro_rule: sys
-      rw_rule: sys
-      protocol: nfs
-      super_user_security: sys
+      ro_rule: any
+      rw_rule: any
+      protocol: any
+      super_user_security: any
       anonymous_user_id: 65534
       allow_suid: false
       hostname: "{{ hostname }}"
@@ -73,6 +73,52 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+      unix_permissions: 777
+      user_id: 0
+      group_id: 0
+      volume_security_style: unix
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: audit
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: default
+      junction_path: "/audit"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      unix_permissions: 777
+      user_id: 0
+      group_id: 0
+      volume_security_style: unix
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      access_based_enumeration: true
+      path: "/{{ vol_name }}"
+      share_name: "{{ vol_name }}"
+      https: true
+      validate_certs: false
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      path: "/audit"
+      share_name: "audit"
+      https: true
+      validate_certs: false
   - name: Service-Policy
     na_ontap_service_policy:
       state: present
@@ -85,4 +131,198 @@
       name: default-data-files
       services:
         - data_core
+        - data_cifs
         - data_nfs
+  - name: Create vserver audit configuration
+    netapp.ontap.na_ontap_vserver_audit:
+      state: present
+      vserver: "{{ vserver }}"
+      enabled: True
+      events:
+        authorization_policy: False
+        cap_staging: False
+        cifs_logon_logoff: True
+        file_operations: True
+        file_share: False
+        security_group: False
+        user_account: False
+      log_path: "/audit"
+      log:
+        format: xml
+      retention:
+        count: 4
+      rotation:
+        size: "1048576"
+      guarantee: False
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Configure NFS
+    na_ontap_nfs:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      nfsv41_pnfs: disabled
+      nfsv41: enabled
+      nfsv40_acl: enabled
+      nfsv41_acl: enabled
+      nfsv4: enabled
+      nfsv4_id_domain: demo.netapp.com
+      use_rest: never
+      validate_certs: false
+      https: true
+  - name: copy new schema
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      privilege: advanced
+      command: ['ldap','client','schema','copy','-schema','MS-AD-BIS','-new-schema-name','demo','-vserver svm1_cluster1']
+      #command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
+  - name: modify new schema
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      privilege: advanced
+      command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
+  - name: Set nfs server Extended Auth
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      privilege: advanced
+      command: ['nfs','modify','-vserver','svm1_cluster1','-auth-sys-extended-groups','enabled']
+  - name: create and apply ldap client
+    netapp.ontap.na_ontap_ldap_client:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      base_dn: DC=demo,DC=netapp,DC=com
+      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
+      bind_password: Netapp1!
+      ldap_servers: "192.168.0.253"
+      schema: demo
+      validate_certs: false
+      https: true
+  - name: Enable LDAP on SVM
+    na_ontap_ldap:
+      state:         present
+      name:          "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+  - name: fix nsswitch passwd
+    netapp.ontap.na_ontap_name_service_switch:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      state: present
+      database_type: passwd
+      sources: files,ldap
+  - name: fix nsswitch group
+    netapp.ontap.na_ontap_name_service_switch:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      state: present
+      database_type: group
+      sources: files,ldap
+-
+  name: DC CONFIGURE
+  hosts: DC1.demo.netapp.com
+  collections:
+    - microsoft.ad
+    - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+    win_server_name: dc1.demo.netapp.com
+  tasks:
+  - name: Add Unix attributes to groups
+    microsoft.ad.group:
+      name: Domain Admins
+      scope: global
+      attributes:
+        set:
+          gidNumber: 768400512
+  - name: Do it again
+    microsoft.ad.group:
+      name: Domain Users
+      scope: global
+      attributes:
+        set:
+          gidNumber: 768400513    
+  - name: Create User 1
+    microsoft.ad.user:
+      name: dougd
+      firstname: Doug
+      surname: Dimmadome
+      password: "{{ password }}"
+      state: present
+      groups:
+        set:
+        - Domain Users
+        - Domain Admins
+      attributes:
+        set:
+          uidNumber: 768401126
+          gidNumber: 768401126
+  - name: Create User 2
+    microsoft.ad.user:
+      name: franks
+      firstname: Frank
+      surname: Sinatra
+      password: "{{ password }}"
+      state: present
+      groups:
+        set:
+        - Domain Users
+-
+  name: CENTOS_SETUP
+  debugger: on_failed
+  hosts: centos01.demo.netapp.com
+  collections:
+    - ansible.posix
+    - ogratwicklcs.realmd_ipa_ad
+  tasks:
+  - name: Mount Volume
+    ansible.posix.mount:
+      src: 192.168.0.131:/data
+      path: /mnt/data
+      opts: vers=4.1,rw,sync,hard,intr,sec=sys
+      boot: no
+      state: mounted
+      fstype: nfs
+  - name: Insert a line at the end of a file. #idmapd.conf
+    lineinfile:
+      path: /etc/idmapd.conf
+      line: Domain = demo.netapp.com
+  - name: Restart service nfs-idmapd
+    ansible.builtin.service:
+      name: nfs-idmapd
+      state: restarted
