@@ -142,10 +142,6 @@
       log_path: "/audit"
       log:
         format: evtx
-      retention:
-        count: 4
-      rotation:
-        size: "1048576"
       guarantee: False
       hostname: "{{ hostname }}"
       username: "{{ username }}"
