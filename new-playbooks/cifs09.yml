@@ -15,6 +15,7 @@
   - name: Grow aggr0-01
     netapp.ontap.na_ontap_aggregate:
       state: present
+      service_state: online
       name: "aggr0_cluster1_01"
       disk_count: 5
       nodes: "cluster1-01"
@@ -23,9 +24,11 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+      use_rest: always
   - name: Grow aggr0-02
     netapp.ontap.na_ontap_aggregate:
       state: present
+      service_state: online
       name: "aggr0_cluster1_02"
       disk_count: 5
       nodes: "cluster1-02"
@@ -34,6 +37,7 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+      use_rest: always
   - name: Export Create
     na_ontap_export_policy:
       state: present
