@@ -71,6 +71,7 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
+      volume_security_style: ntfs
       https: true
       validate_certs: false
   - name: Volume Create
@@ -86,6 +87,7 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
+      volume_security_style: ntfs
       https: true
       validate_certs: false
   - name: CIFS Share Create
