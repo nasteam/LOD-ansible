@@ -16,7 +16,7 @@
     netapp.ontap.na_ontap_aggregate:
       state: present
       name: "aggr0_cluster1_01"
-      disk_count: 1
+      disk_count: 5
       nodes: "cluster1-01"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
@@ -27,7 +27,7 @@
     netapp.ontap.na_ontap_aggregate:
       state: present
       name: "aggr0_cluster1_02"
-      disk_count: 1
+      disk_count: 5
       nodes: "cluster1-02"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
