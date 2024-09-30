@@ -1,0 +1,139 @@
+# CIFS Auditing - Incorrect ACE? Missing ACE?
+- 
+  name: ACTIVATE CRUNCH EFFECT
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: pizza_plans
+  tasks:
+  - name: Export Create
+    na_ontap_export_policy:
+      state: present
+      name: pizza_policy
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Mod Default Policy
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      rule_index: 1
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      protocol: any
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false 
+  - name: Export Policy Rule Create
+    na_ontap_export_policy_rule:
+      state: present
+      name: pizza_policy
+      vserver: "{{ vserver }}"
+      rule_index: 1
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      protocol: any
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: pizza_policy
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      access_based_enumeration: true
+      path: "/{{ vol_name }}"
+      share_name: "{{ vol_name }}"
+      https: true
+      validate_certs: false
+  - name: Service-Policy
+    na_ontap_service_policy:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      https: true
+      validate_certs: false
+      name: default-data-files
+      services:
+        - data_core
+        - data_cifs
+- 
+  name: Set Up Us The Windows
+  hosts: DC1.demo.netapp.com
+  collections:
+    - community.windows
+    - anisble.windows
+    - microsoft.ad
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: aggr1
+    vol_name: pizza_plans
+  tasks:
+  - name: Create User
+    microsoft.ad.user:
+      name: dougd
+      firstname: Doug
+      surname: Dimmadome
+      password: "{{ password }}"
+      state: present
+      groups:
+        set:
+        - Domain Users
+        - Domain Admins
+  - name: Map Drive via PS
+    ansible.windows.win_powershell:
+     script: |
+      New-SmbMapping -LocalPath 'X:' -RemotePath '\\192.168.0.131\pizza_plans' -UserName 'DEMO\Administrator' -Password 'Netapp1!';
+      Set-AdUser -Identity dougd -HomeDirectory "\\192.168.0.131\pizza_plans"
+  - name: Add ACL
+    ansible.windows.win_acl:
+      user: DEMO\dougd
+      path: X:\
+      rights: FullControl
+      type: allow
+      state: present
+      inherit: ContainerInherit, ObjectInherit
