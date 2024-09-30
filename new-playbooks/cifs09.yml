@@ -9,7 +9,7 @@
     username: admin
     password: Netapp1!
     vserver: svm1_cluster1
-    aggr: aggr1
+    aggr: cluster1_01_SSD_1
     vol_name: pizza_plans
   tasks:
   - name: Export Create
