@@ -320,7 +320,7 @@
   hosts: centos01.demo.netapp.com
   collections:
     - ansible.posix
-    - ogratwicklcs.realmd_ipa_ad
+    - ansible.builtin
   tasks:
   - name: Mount Volume
     ansible.posix.mount:
@@ -346,3 +346,7 @@
     ansible.builtin.service:
       name: nfs-idmapd
       state: restarted
+  - name: Life shouldn't be so hard
+    ansible.builtin.package:
+     name:
+       - nfs4-acl-tools
