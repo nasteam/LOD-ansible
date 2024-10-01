@@ -351,3 +351,21 @@
      name:
        - nfs4-acl-tools
        - nano
+       - krb5-workstation
+       - realmd
+       - oddjob
+       - oddjob-mkhomedir
+       - sssd
+       - samba-common-tools
+       - python3-pip
+       - python2-pip
+     state: latest
+  - name: Install pexpect python package
+    pip:
+      name: pexpect
+  - name: Join to Active Directory domain
+    ansible.builtin.expect:
+      command: realm join -U Administrator DEMO.NETAPP.COM
+      responses:
+        "Password for Administrator@DEMO.NETAPP.COM: ":
+            - Netapp1!
