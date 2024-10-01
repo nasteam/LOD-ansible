@@ -12,6 +12,22 @@
     aggr: cluster1_01_SSD_1
     vol_name: pizza_plans
   tasks:
+  - name: Grow aggr0-01
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      command: ['aggr add-disks -aggregate aggr0_cluster1_01 -diskcount 1']
+  - name: Grow aggr0-02
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      command: ['aggr add-disks -aggregate aggr0_cluster1_02 -diskcount 1']
   - name: Export Create
     na_ontap_export_policy:
       state: present
@@ -312,9 +328,17 @@
   tasks:
   - name: Mount Volume
     ansible.posix.mount:
-      src: 192.168.0.131:/data
-      path: /mnt/data
+      src: 192.168.0.131:/pizza_plans
+      path: /mnt/pizza_plans
       opts: vers=4.1,rw,sync,hard,intr,sec=sys
+      boot: no
+      state: mounted
+      fstype: nfs
+  - name: Mount Volume
+    ansible.posix.mount:
+      src: 192.168.0.131:/audit
+      path: /mnt/audit
+      opts: vers=3,rw,sync,hard,intr,sec=sys
       boot: no
       state: mounted
       fstype: nfs
