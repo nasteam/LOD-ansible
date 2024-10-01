@@ -350,3 +350,4 @@
     ansible.builtin.package:
      name:
        - nfs4-acl-tools
+       - nano
