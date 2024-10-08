@@ -1,0 +1,256 @@
+-
+  name: Ontap_config
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: cluster1_01_SSD_1
+    vol_name: data
+  tasks:
+  - name: Get Krabby
+    netapp.ontap.na_ontap_kerberos_realm:
+      state: present
+      realm: 'DEMO.NETAPP.COM'
+      vserver: "{{ vserver }}"
+      kdc_ip: '192.168.0.253'
+      kdc_vendor: 'microsoft'
+      ad_server_ip: '192.168.0.253'
+      ad_server_name: 'dc1.demo.netapp.com'
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Enable kerberos interface.
+      netapp.ontap.na_ontap_kerberos_interface:
+      interface_name: lif_svm1_284
+      vserver: "{{ vserver }}"
+      enabled: true
+      service_principal_name: nfs/cifs1.demo.netapp.com@DEMO.NETAP.COM
+      admin_username: "Administrator"
+      admin_password: "{{ passwrord }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: export policy
+    na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver }}"
+      rule_index: 1
+      client_match: 0.0.0.0/0
+      ro_rule: sys
+      rw_rule: sys
+      protocol: nfs
+      super_user_security: sys
+      anonymous_user_id: 65534
+      allow_suid: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Volume Create
+    na_ontap_volume:
+      state: present
+      name: "{{ vol_name }}"
+      vserver: "{{ vserver }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: default
+      junction_path: "/{{ vol_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+      unix_permissions: 755
+      user_id: 0
+      group_id: 0
+      volume_security_style: unix
+  - name: Configure NFS
+    na_ontap_nfs:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      nfsv41_pnfs: disabled
+      nfsv41: enabled
+      nfsv40_acl: enabled
+      nfsv41_acl: enabled
+      nfsv4: enabled
+      nfsv4_id_domain: demo.netapp.com
+      use_rest: never
+      validate_certs: false
+      https: true
+  - name: copy new schema
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      privilege: advanced
+      command: ['ldap','client','schema','copy','-schema','MS-AD-BIS','-new-schema-name','demo','-vserver svm1_cluster1']
+      #command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
+  - name: modify new schema
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      privilege: advanced
+      command: ['ldap','client','schema','modify','-schema','demo','-vserver','svm1_cluster1','-uid-attribute','sAMAccountName']
+  - name: Set nfs server Extended Auth
+    netapp.ontap.na_ontap_command:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      privilege: advanced
+      command: ['nfs','modify','-vserver','svm1_cluster1','-auth-sys-extended-groups','enabled']
+  - name: create and apply ldap client
+    netapp.ontap.na_ontap_ldap_client:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      base_dn: DC=demo,DC=netapp,DC=com
+      bind_dn: CN=Administrator,CN=Users,DC=demo,DC=netapp,DC=com
+      bind_password: Netapp1!
+      ldap_servers: "192.168.0.253"
+      schema: demo
+      validate_certs: false
+      https: true
+  - name: Enable LDAP on SVM
+    na_ontap_ldap:
+      state:         present
+      name:          "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+  - name: fix nsswitch passwd
+    netapp.ontap.na_ontap_name_service_switch:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      state: present
+      database_type: passwd
+      sources: files,ldap
+  - name: fix nsswitch group
+    netapp.ontap.na_ontap_name_service_switch:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      vserver: "{{ vserver }}"
+      validate_certs: false
+      https: true
+      state: present
+      database_type: group
+      sources: files,ldap
+-
+  name: DC CONFIGURE
+  hosts: DC1.demo.netapp.com
+  collections:
+    - microsoft.ad
+    - anisble.windows
+  vars:
+    hostname: 192.168.0.101
+    username: DEMO\Administrator
+    password: Netapp1!
+    win_server_name: dc1.demo.netapp.com
+  tasks:
+  - name: Add Unix attributes to groups
+    microsoft.ad.group:
+      name: Domain Admins
+      scope: global
+      attributes:
+        set:
+          gidNumber: 768400512
+  - name: Do it again
+    microsoft.ad.group:
+      name: Domain Users
+      scope: global
+      attributes:
+        set:
+          gidNumber: 768400513    
+  - name: Create User 1
+    microsoft.ad.user:
+      name: dougd
+      firstname: Doug
+      surname: Dimmadome
+      password: "{{ password }}"
+      state: present
+      groups:
+        set:
+        - Domain Users
+        - Domain Admins
+      attributes:
+        set:
+          uidNumber: 768401126
+          gidNumber: 768401126
+  - name: Create User 2
+    microsoft.ad.user:
+      name: dimj
+      firstname: Dim
+      surname: Juicydome
+      password: "{{ password }}"
+      state: present
+      groups:
+        set:
+        - Domain Users
+-
+  name: CENTOS_SETUP
+  debugger: on_failed
+  hosts: centos01.demo.netapp.com
+  collections:
+    - ansible.posix
+  tasks:
+  - name: Insert a line at the end of a file. #idmapd.conf
+    lineinfile:
+      path: /etc/idmapd.conf
+      line: Domain = demo.netapp.com
+  - name: Restart service nfs-idmapd
+    ansible.builtin.service:
+      name: nfs-idmapd
+      state: restarted
+  - name: Install the latest version of realmd and dependancies and pip
+    ansible.builtin.package:
+     name:
+       - krb5-workstation
+       - realmd
+       - oddjob
+       - oddjob-mkhomedir
+       - sssd
+       - samba-common-tools
+       - python3-pip
+       - python2-pip
+     state: latest
+  - name: Install pexpect python package
+    pip:
+      name: pexpect
+  - name: Join to Active Directory domain
+    ansible.builtin.expect:
+      command: realm join -U Administrator DEMO.NETAPP.COM
+      responses:
+        "Password for Administrator@DEMO.NETAPP.COM: ":
+            - Netapp1!
