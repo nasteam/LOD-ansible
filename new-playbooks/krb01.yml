@@ -32,7 +32,7 @@
       enabled: true
       service_principal_name: nfs/cifs1.demo.netapp.com@DEMO.NETAP.COM
       admin_username: "Administrator"
-      admin_password: "{{ passwrord }}"
+      admin_password: "{{ password }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
