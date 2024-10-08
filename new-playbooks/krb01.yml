@@ -254,3 +254,7 @@
       responses:
         "Password for Administrator@DEMO.NETAPP.COM: ":
             - Netapp1!
+  - name: GSSD, RISE FROM YOUR GRAVE
+    ansible.builtin.systemd_service:
+      state: started
+      name: rpc-gssd
