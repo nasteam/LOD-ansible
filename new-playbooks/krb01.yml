@@ -167,6 +167,18 @@
       state: present
       database_type: group
       sources: files,ldap
+  - name: Break us the mapping
+    netapp.ontap.na_ontap_name_mappings:
+      vserver: "{{ vserver }}"
+      direction: krb_unix
+      index: 1
+      pattern: '(.+)$@DEMO.NETAPP.COM'
+      replacement: root
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      validate_certs: false
+      https: true
 -
   name: DC CONFIGURE
   hosts: DC1.demo.netapp.com
