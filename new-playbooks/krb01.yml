@@ -25,9 +25,9 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
-  - name: Enable kerberos interface.
+  - name: Kraberize Interface
       netapp.ontap.na_ontap_kerberos_interface:
-      interface_name: lif_svm1_284
+      interface_name: svm1_data_lif1
       vserver: "{{ vserver }}"
       enabled: true
       service_principal_name: nfs/cifs1.demo.netapp.com@DEMO.NETAP.COM
