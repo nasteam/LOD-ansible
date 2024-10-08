@@ -30,7 +30,7 @@
       interface_name: svm1_data_lif1
       vserver: "{{ vserver }}"
       enabled: true
-      service_principal_name: nfs/cifs1.demo.netapp.com@DEMO.NETAP.COM
+      service_principal_name: 'nfs/cifs1.demo.netapp.com@DEMO.NETAPP.COM'
       admin_username: "Administrator"
       admin_password: "{{ password }}"
       hostname: "{{ hostname }}"
