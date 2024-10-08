@@ -45,10 +45,10 @@
       vserver: "{{ vserver }}"
       rule_index: 1
       client_match: 0.0.0.0/0
-      ro_rule: sys
-      rw_rule: sys
+      ro_rule: 'sys,krb5,krb5i,krb5p'
+      rw_rule: 'sys,krb5,krb5i,krb5p'
       protocol: nfs
-      super_user_security: sys
+      super_user_security: 'sys,krb5,krb5i,krb5p'
       anonymous_user_id: 65534
       allow_suid: false
       hostname: "{{ hostname }}"
