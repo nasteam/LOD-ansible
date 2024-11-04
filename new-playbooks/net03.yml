@@ -247,10 +247,10 @@
       url: https://raw.githubusercontent.com/nasteam/LOD-ansible/main/restable/ipsec_libre_pki.conf
       dest: /etc/ipsec.d/ipsec01.conf
       mode: '0777'
+  - name: right sed fred
+    shell: sed -i 's/sha384-ecp_384/sha512-modp2048/' /etc/ipsec.d/ipsec01.conf
   - name: start ipsec
     systemd:
       name: ipsec
       enabled: true
       state: started
-  - name: right sed fred
-    shell: sed -i 's/sha384-ecp_384/sha512-modp2048/' /etc/ipsec.d/ipsec01.conf
