@@ -1,0 +1,256 @@
+-
+  name: IPSEC PKI setup
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: cluster1_01_SSD_1
+    vol_name: photoshop
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    ontap_cert_name: svm1_rootca
+    ipsec_ontap_name: svm1.demo.netapp.local
+    rhel_name: rhel1.demo.netapp.local
+    private_key: /etc/ssl/private/{{ ipsec_ontap_name }}.pem
+    csr_path: /etc/ssl/csr/{{ ipsec_ontap_name }}.csr
+    rhel_private_key: /etc/ssl/private/{{ rhel_name }}.pem
+    rhel_csr_path: /etc/ssl/csr/{{ rhel_name }}.csr
+    bucket_name: svm1-bucket
+    service_policy_name: default-data-files
+    cert_name: svm1_ipsec
+  tasks:
+  - name: Create the SSL Private directory
+    ansible.builtin.file:
+      path: /etc/ssl/private
+      state: directory
+      mode: '0755'
+  - name: Create the SSL CSR directory
+    ansible.builtin.file:
+      path: /etc/ssl/csr
+      state: directory
+      mode: '0755'
+  - name: ONTAP Generate an OpenSSL private key with the default values (4096 bits, RSA)
+    community.crypto.openssl_privatekey:
+      path: "{{ private_key }}"
+  - name: ONTAP Generate an OpenSSL Certificate Signing Request
+    community.crypto.openssl_csr:
+      path: "{{ csr_path }}"
+      privatekey_path: "{{ private_key }}"
+      common_name: "{{ ipsec_ontap_name }}"
+  - name: RHEL Generate an OpenSSL private key with the default values (4096 bits, RSA)
+    community.crypto.openssl_privatekey:
+      path: "{{ rhel_private_key }}"
+      passphrase: ansible
+      cipher: auto
+  - name: RHEL Generate an OpenSSL Certificate Signing Request
+    community.crypto.openssl_csr:
+      path: "{{ rhel_csr_path }}"
+      privatekey_path: "{{ rhel_private_key }}"
+      common_name: "{{ rhel_name }}"
+      privatekey_passphrase: ansible
+      extended_key_usage:
+        - serverAuth  
+  - name: Create root-ca cert
+    netapp.ontap.na_ontap_security_certificates:
+      common_name: "{{ ontap_cert_root_common_name }}"
+      name: "{{ ontap_cert_name }}"
+      type: root_ca
+      svm: "{{ vserver }}"
+      expiry_time: P365DT     # one year
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: Get RootCA cert from ONTAP
+    netapp.ontap.na_ontap_rest_cli:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      #command: 'security/certificates'
+      command: 'security/certificate'
+      verb: 'GET'
+      params: {'vserver': '{{ vserver }}','type':'root-ca','fields':'public-cert','common-name': '{{ ontap_cert_root_common_name }}'}
+      validate_certs: false
+      https: true
+    register: root_ca_cert
+  - debug: var=root_ca_cert.msg.records[0].public_cert
+  - name: Write ONTAP root CA to local disk
+    local_action: copy content="{{ root_ca_cert.msg.records[0].public_cert }}" dest=/etc/ssl/certs/{{ ontap_cert_root_common_name }}.pem
+  - name: ONTAP sign certificate using newly create certificate
+    tags: sign_request
+    netapp.ontap.na_ontap_security_certificates:
+      name: "{{ ontap_cert_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      type: server
+      use_rest: always
+      https: true
+      validate_certs: false   
+      svm: "{{ vserver }}"
+      signing_request: "{{ lookup('file', csr_path) }}"
+      expiry_time: P180DT
+    register: signed_cert
+  - debug:  var=signed_cert.ontap_info.public_certificate
+  - name: RHEL sign certificate using newly create certificate
+    tags: sign_request
+    netapp.ontap.na_ontap_security_certificates:
+      name: "{{ ontap_cert_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      type: server
+      use_rest: always
+      https: true
+      validate_certs: false   
+      svm: "{{ vserver }}"
+      signing_request: "{{ lookup('file', rhel_csr_path) }}"
+      expiry_time: P180DT
+    register: rhel_signed_cert
+  - name: Write signed certificate to a file
+    local_action: copy content="{{rhel_signed_cert.ontap_info.public_certificate}}" dest=/etc/ssl/certs/{{ rhel_name }}.pem
+  - name: Generate PKCS#12 file to install on RHEL
+    community.crypto.openssl_pkcs12:
+      action: export
+      path: /etc/ssl/{{ rhel_name }}.p12
+      friendly_name: "{{ rhel_name }}"
+      privatekey_path: "{{ rhel_private_key }}"
+      certificate_path: /etc/ssl/certs/{{ rhel_name }}.pem
+      other_certificates: /etc/ssl/certs/{{ ontap_cert_root_common_name }}.pem
+      privatekey_passphrase: ansible
+      passphrase: ansible
+      #other_certificates: /opt/certs/ca.pem
+      # Note that if /opt/certs/ca.pem contains multiple certificates,
+      # only the first one will be used. See the other_certificates_parse_all
+      # option for changing this behavior.
+      state: present
+  - name: ONTAP Install Certificate
+    netapp.ontap.na_ontap_security_certificates:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+      type: server
+      public_certificate: "{{ signed_cert.ontap_info.public_certificate }}"
+      private_key: "{{ lookup('file', private_key) }}"
+      name: "{{ cert_name }}"
+      common_name: "{{ ipsec_ontap_name }}"
+      svm: "{{ vserver }}"
+
+-
+  name: Configure ONTAP IPSEC PKI
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1_cluster1
+    aggr: cluster1_01_SSD_1
+    vol_name: photoshop
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    ontap_cert_name: svm1_rootca
+    ipsec_ontap_name: svm1.demo.netapp.local
+    rhel_name: rhel1.demo.netapp.local
+    private_key: /etc/ssl/private/{{ ipsec_ontap_name }}.pem
+    csr_path: /etc/ssl/csr/{{ ipsec_ontap_name }}.csr
+    rhel_private_key: /etc/ssl/private/{{ rhel_name }}.pem
+    rhel_csr_path: /etc/ssl/csr/{{ rhel_name }}.csr
+    bucket_name: svm1-bucket
+    service_policy_name: default-data-files
+    cert_name: svm1_ipsec
+  tasks:
+  - name: Add IPsec CA certificate to svm.
+    netapp.ontap.na_ontap_security_ipsec_ca_certificate:
+      svm: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+      name: svm1_ca.demo.netapp.local
+  - name: Create security IPsec policy with certificates.
+    netapp.ontap.na_ontap_security_ipsec_policy:
+      svm: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+      name: ipsec_policy_pki
+      ipspace: Default
+      authentication_method: pki
+      certificate: "{{ cert_name }}"
+      local_identity: 192.168.0.131
+      remote_identity: CN=rhel1.demo.netapp.local
+      local_endpoint:
+        address: 192.168.0.131
+        netmask: 24
+        port: 0-0
+      remote_endpoint:
+        address: 192.168.0.61
+        netmask: 24
+        port: 0-0
+      protocol: tcp
+  - name: Enable IPSEC
+    netapp.ontap.na_ontap_security_ipsec_config:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+      enabled: True
+
+-
+  name: Configure client
+  hosts: localhost
+  collections:
+    - ansible.builtin
+  vars:
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    rhel_name: rhel1.demo.netapp.local
+    privatekey_passphrase: ansible
+    pkcs12_path: /etc/ssl/{{ rhel_name }}.p12
+  tasks:
+  - name: Create Directory
+    file:
+      path: /mnt/photoshop
+      owner: root
+      group: root
+      mode: '0755'
+      state: directory
+  - name: Install nfs-utils
+    yum:
+      name: nfs-utils
+  - name: Install Libreswan
+    yum:
+      name: libreswan
+  - name: import rootca
+    command:
+      cmd: "certutil -d sql:/etc/ipsec.d -A -n rootCA -t C,C,p -a -i /etc/ssl/certs/{{ ontap_cert_root_common_name }}.pem"
+  - name: import pkcs12
+    command: 
+      cmd: "pk12util -d sql:/etc/ipsec.d -i {{ pkcs12_path }} -W {{ privatekey_passphrase }}"
+  - name: Pull required conf file
+    get_url:
+      url: https://raw.githubusercontent.com/nasteam/LOD-ansible/main/restable/ipsec_libre_pki.conf
+      dest: /etc/ipsec.d/ipsec01.conf
+      mode: '0777'
+  - name: start ipsec
+    systemd:
+      name: ipsec
+      enabled: true
+      state: started
+  - name: right sed fred
+    shell: sed -i 's/sha384-ecp_384/sha512-modp2048/' /etc/ipsec.d/ipsec01.conf
