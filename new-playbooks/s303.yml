@@ -186,6 +186,7 @@
       username: "{{ username }}"
       password: "{{ password }}"
       nas_path: "/s3_flexgroup/s3test"
+      type: nas
       https: true
       validate_certs: false
       use_rest: always
