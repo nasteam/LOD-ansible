@@ -1,3 +1,4 @@
+# NFS automount with NFSv3 disabled
 -
   name: NFSv4 Nobody
   hosts: localhost

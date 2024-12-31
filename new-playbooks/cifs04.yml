@@ -1,3 +1,4 @@
+# SMB3 encryption w/ non-SMB3 client
 - 
   name: Configure ONTAP
   hosts: localhost

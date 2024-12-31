@@ -1,3 +1,4 @@
+# NFSv4 UTF-8
 -
   name: Ontap_config1
   hosts: localhost

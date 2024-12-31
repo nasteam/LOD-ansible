@@ -1,3 +1,4 @@
+# NFS extended groups with user not in ns-switch
 -
   name: Ontap_config
   hosts: localhost

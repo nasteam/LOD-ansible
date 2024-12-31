@@ -1,3 +1,4 @@
+# LDAP FastBind login w/ no TLS
 -
   name: RBAC FastBind
   hosts: localhost

@@ -1,3 +1,4 @@
+# CIFS read-only export-policy
 - 
   name: Configure ONTAP
   hosts: localhost

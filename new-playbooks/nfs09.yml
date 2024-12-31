@@ -1,3 +1,4 @@
+# NFS NTFS vol root mapped user disabled
 - 
   name: Configure ONTAP
   hosts: localhost
