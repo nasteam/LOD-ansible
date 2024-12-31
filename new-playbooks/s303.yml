@@ -88,6 +88,18 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      access_based_enumeration: true
+      path: "/{{ vol_name }}"
+      share_name: "{{ vol_name }}"
+      https: true
+      validate_certs: false
   - name: Initialize Housing Crisis
     na_ontap_quota_policy:
       state: present
@@ -185,17 +197,8 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
-      nas_path: "/s3_flexgroup/s3test"
+      nas_path: "/s3_flexgroup"
       type: nas
       https: true
       validate_certs: false
       use_rest: always
-  - name: Create S3 User mapping
-    netapp.ontap.na_ontap_command:
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      command: ['vserver', 'name-mapping', 'create', '-vserver', 'svm1_cluster1', '-direction', 's3-win', '-pattern', 'user1', '-replacement', 'Administrator']
-      privilege: 'admin'
-      https: true
-      validate_certs: false
