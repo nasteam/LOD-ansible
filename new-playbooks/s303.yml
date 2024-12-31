@@ -177,15 +177,18 @@
       use_rest: always
       https: true
       validate_certs: false
-  - name: Create S3 Bucket
-    netapp.ontap.na_ontap_command:
+  - name: Create S3 bucket
+    netapp.ontap.na_ontap_s3_buckets:
+      state: present
+      name: s3test
+      vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
-      command: ['object-store-server', 'bucket', 'create', '-vserver', 'svm1_cluster1', '-type', 'nas', '-bucket', 's3_test', '-nas-path', '/s3_test']
-      privilege: 'admin'
+      nas_path: "/s3_flexgroup/s3test"
       https: true
       validate_certs: false
+      use_rest: always
   - name: Create S3 User mapping
     netapp.ontap.na_ontap_command:
       hostname: "{{ hostname }}"
