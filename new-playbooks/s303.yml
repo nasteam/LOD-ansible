@@ -88,18 +88,6 @@
       password: "{{ password }}"
       https: true
       validate_certs: false
-  - name: CIFS Share Create
-    na_ontap_cifs:
-      state: present
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      access_based_enumeration: true
-      path: "/{{ vol_name }}"
-      share_name: "{{ vol_name }}"
-      https: true
-      validate_certs: false
   - name: Initialize Housing Crisis
     na_ontap_quota_policy:
       state: present
@@ -202,3 +190,15 @@
       https: true
       validate_certs: false
       use_rest: always
+  - name: CIFS Share Create
+    na_ontap_cifs:
+      state: present
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      access_based_enumeration: true
+      path: "/{{ vol_name }}"
+      share_name: "{{ vol_name }}"
+      https: true
+      validate_certs: false
