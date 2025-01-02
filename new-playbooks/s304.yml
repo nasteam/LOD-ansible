@@ -304,8 +304,8 @@
         statements:
           - sid: FullAccessToUser1
             resources:
-              - "{{ bucket_name }}"
-              - "{{ bucket_name }}"/*
+              - svm1-bucket
+              - svm1-bucket/*
             actions:
               - GetObject
               - PutObject
