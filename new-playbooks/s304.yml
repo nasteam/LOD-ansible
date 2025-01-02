@@ -337,6 +337,8 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
+      validate_certs: false
+      https: true
   - name: Configure NFS
     na_ontap_nfs:
       state: present
