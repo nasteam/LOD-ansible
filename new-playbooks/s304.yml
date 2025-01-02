@@ -208,7 +208,7 @@
         - Domain Users
       attributes:
         set:
-          gidNumber: 768401126
+          gidNumber: 768401127
 -
   name: S3 Lab 4 LDAP/S3 configuration
   hosts: localhost
