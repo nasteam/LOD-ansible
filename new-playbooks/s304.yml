@@ -206,7 +206,7 @@
       scope: global
       members:
         set:
-        - Domain Users
+        - dougd
       attributes:
         set:
           gidNumber: 768401127
