@@ -304,8 +304,8 @@
         statements:
           - sid: FullAccessToUser1
             resources:
-              - bucket1
-              - bucket1/*
+              - "{{ bucket_name }}"
+              - "{{ bucket_name }}"/*
             actions:
               - GetObject
               - PutObject
