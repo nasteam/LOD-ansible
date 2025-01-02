@@ -274,6 +274,22 @@
       validate_certs: false
     register: credentials
   - debug:  var=credentials
+  - name: Create and modify a S3 Group
+    netapp.ontap.na_ontap_s3_groups:
+      state: present
+      name: fastbindgroup
+      comment: group for devs
+      users:
+        - name: user1
+      policies:
+        - name: FullAccess
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false 
   - name: Create S3 bucket
     netapp.ontap.na_ontap_s3_buckets:
       state: present
@@ -284,6 +300,21 @@
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
+      policy:
+        statements:
+          - sid: FullAccessToUser1
+            resources:
+              - bucket1
+              - bucket1/*
+            actions:
+              - GetObject
+              - PutObject
+              - DeleteObject
+              - ListBucket
+            effect: allow
+            principals:
+              - user1
+              - group/fastbindgroup
       use_rest: always
       https: true
       validate_certs: false
@@ -303,42 +334,6 @@
       use_rest: always
       https: true
       validate_certs: false
-  - name: Create and modify a S3 Group
-    netapp.ontap.na_ontap_s3_groups:
-      state: present
-      name: fastbindgroup
-      comment: group for devs
-      users:
-        - name: user1
-      policies:
-        - name: FullAccess
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      use_rest: always
-      https: true
-      validate_certs: false
-  - name: WITNESS STATEMENT
-    netapp.ontap.na_ontap_s3_policies:
-      state: present
-      name: fastbindpolicy
-      comment: S3 FastBind Policy
-      statements:
-        - sid: 1
-          resources:
-          - "{{ bucket_name }}"
-          - "{{ bucket_name }}/*"
-          actions:
-            - "*"
-          effect:
-            allow
-      vserver: "{{ vserver }}"
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      validate_certs: false
-      https: true
   - name: Configure NFS
     na_ontap_nfs:
       state: present
