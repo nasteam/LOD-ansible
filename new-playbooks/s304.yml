@@ -199,6 +199,17 @@
         set:
           uidNumber: 768401126
           gidNumber: 768401126
+  - name: Create FastBind Group
+    microsoft.ad.group:
+      name: fastbindgroup
+      password: "{{ password }}"
+      state: present
+      members:
+        set:
+        - Domain Users
+      attributes:
+        set:
+          gidNumber: 768401126
 -
   name: S3 Lab 4 LDAP/S3 configuration
   hosts: localhost
@@ -295,7 +306,7 @@
   - name: Create and modify a S3 Group
     netapp.ontap.na_ontap_s3_groups:
       state: present
-      name: dev-group
+      name: fastbindgroup
       comment: group for devs
       users:
         - name: user1
