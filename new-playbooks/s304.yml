@@ -319,6 +319,24 @@
       use_rest: always
       https: true
       validate_certs: false
+  - name: WITNESS STATEMENT
+    netapp.ontap.na_ontap_s3_policies:
+    state: present
+    name: fastbindpolicy
+    comment: S3 FastBind Policy
+    statements:
+      - sid: 1
+        resources:
+        - "{{ bucket_name }}"
+        - "{{ bucket_name }}/*"
+        actions:
+          - "*"
+        effect:
+          allow
+    vserver: "{{ vserver }}"
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
   - name: Configure NFS
     na_ontap_nfs:
       state: present
