@@ -333,8 +333,6 @@
             - "*"
           effect:
             allow
-          principal:
-            - fastbindgroup
       vserver: "{{ vserver }}"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
