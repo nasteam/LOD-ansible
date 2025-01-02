@@ -149,6 +149,7 @@
   collections:
    - community.windows
    - anisble.windows
+   - microsoft.ad
   vars:
     hostname: 192.168.0.101
     username: DEMO\Administrator
@@ -169,6 +170,35 @@
       key_exportable: false
       key_storage: machine
       state: present
+  - name: Add Unix attributes to groups
+    microsoft.ad.group:
+      name: Domain Admins
+      scope: global
+      attributes:
+        set:
+          gidNumber: 768400512
+  - name: Do it again
+    microsoft.ad.group:
+      name: Domain Users
+      scope: global
+      attributes:
+        set:
+          gidNumber: 768400513    
+  - name: Create User 1
+    microsoft.ad.user:
+      name: dougd
+      firstname: Doug
+      surname: Dimmadome
+      password: "{{ password }}"
+      state: present
+      groups:
+        set:
+        - Domain Users
+        - Domain Admins
+      attributes:
+        set:
+          uidNumber: 768401126
+          gidNumber: 768401126
 -
   name: S3 Lab 4 LDAP/S3 configuration
   hosts: localhost
