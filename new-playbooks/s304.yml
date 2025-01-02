@@ -202,7 +202,6 @@
   - name: Create FastBind Group
     microsoft.ad.group:
       name: fastbindgroup
-      password: "{{ password }}"
       state: present
       members:
         set:
