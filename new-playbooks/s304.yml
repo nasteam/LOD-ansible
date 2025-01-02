@@ -203,6 +203,7 @@
     microsoft.ad.group:
       name: fastbindgroup
       state: present
+      scope: global
       members:
         set:
         - Domain Users
