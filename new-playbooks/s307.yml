@@ -1,0 +1,155 @@
+- 
+  name: S3 Snapshot
+  hosts: localhost
+  collections:
+    - netapp.ontap
+  vars:
+    hostname: 192.168.0.101
+    username: admin
+    password: Netapp1!
+    vserver: svm1
+    aggr: cluster1_01_SSD_1
+    vol_name: photoshop
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    ontap_cert_name: svm1_rootca
+    s3_server_name: s3_cluster1
+    s3_user: sm_s3_user
+    private_key: /etc/ssl/private/{{ s3_server_name }}.pem
+    csr_path: /etc/ssl/csr/{{ s3_server_name }}.csr
+    bucket_name: svm1-bucket
+    service_policy_name: default-data-files
+  tasks:
+  - name: Creating a new directory
+    file:
+      path: "~/.aws"
+      state: directory
+  - name: Install boto3 and botocore with pip3 module
+    pip:
+      name: 
+        - boto3
+        - botocore
+      executable: pip3
+  - name: Force-install collection ONTAP at specific version
+    community.general.ansible_galaxy_install:
+      type: collection
+      name: netapp.ontap:22.13.0
+      force: true
+  - name: Force-install collection aws collection for S3 work
+    community.general.ansible_galaxy_install:
+      type: collection
+      name: amazon.aws
+      force: true
+  - name: enable s3 service
+    na_ontap_s3_services:
+      state: present
+      name: "{{ s3_server_name }}"
+      vserver: "{{ vserver }}"
+      comment: not enabled
+      enabled: True
+      is_http_enabled: true
+      is_https_enabled: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: create or modify s3 user
+    na_ontap_s3_users:
+      state: present
+      name: "{{ s3_user }}"
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+    register: credentials
+  - debug:  var=credentials
+  - name: Creating a file with content
+    copy:
+      dest: "~/.aws/credentials"
+      content: |
+        [default]
+        aws_access_key_id = {{ credentials.access_key }}
+        aws_secret_access_key = {{ credentials.secret_key }}
+  - name: Create S3 bucket
+    netapp.ontap.na_ontap_s3_buckets:
+      state: present
+      name: "{{ bucket_name }}"
+      comment: bucket-template
+      size: 838860800
+      policy:
+        statements:
+          - sid: FullAccessToUser1
+            resources:
+              - svm1-bucket
+              - svm1-bucket/*
+            actions:
+              - GetObject
+              - PutObject
+              - DeleteObject
+              - ListBucket
+              - GetObjectTagging
+            effect: allow
+            conditions:
+              - operator: ip_address
+                source_ips:
+                  - 0.0.0.0/0
+            principals:
+              - "*"
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: Modify single service policy
+    netapp.ontap.na_ontap_service_policy:
+      state: present
+      name: "{{ service_policy_name }}"
+      services:
+        - data_core
+        - data_nfs
+        - data_cifs
+        - data_s3_server
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: PUT object into bucket to retrieve
+    amazon.aws.s3_object:
+      bucket: "{{ bucket_name }}"
+      object: cred
+      content: "pcloadletter"
+      mode: put
+      ceph: true
+      endpoint_url: "http://192.168.0.131"
+      validate_bucket_name: false
+      ignore_nonexistent_bucket: false
+  - name: CLI bucket snapshot
+    netapp.ontap.na_ontap_rest_cli:
+      command: 'vserver/object-store-server/bucket/snapshot'
+      verb: 'POST'
+      body: {'bucket': "{{ bucket_name }}", 'snapshot': 'new-snapshot', 'vserver': "{{ vserver }}"}
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      use_rest: always
+      https: true
+      validate_certs: false
+  - name: PUT object into bucket to retrieve
+    amazon.aws.s3_object:
+      bucket: "{{ bucket_name }}"
+      object: cred
+      content: "sargnarg"
+      mode: put
+      ceph: true
+      endpoint_url: "http://192.168.0.131"
+      validate_bucket_name: false
+      ignore_nonexistent_bucket: false
