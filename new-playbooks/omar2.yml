@@ -66,7 +66,6 @@
       state: present
       name: "{{ vol_name }}"
       vserver: "{{ vserver }}"
-      auto_provision_as: flexvol
       size: 10
       size_unit: gb
       policy: "{{ policy }}"
