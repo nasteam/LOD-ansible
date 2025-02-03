@@ -47,7 +47,7 @@
       password: "{{ password }}"
       command: 'vserver/cifs/security'
       verb: 'PATCH'
-      params: {'vserver': 'svm1_cluster1', 'advertised-enc-types': 'des,rc4'}
+      params: {'vserver': 'svm1_cluster1', 'advertised-enc-types': 'des, rc4'}
       validate_certs: false
 -
   name: Set Up The Windows
