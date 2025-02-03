@@ -43,8 +43,8 @@
   - name: run ontap cli command
     netapp.ontap.na_ontap_command:
       hostname: "{{ hostname }}"
-      username: "{{ admin username }}"
-      password: "{{ admin password }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
       command: ['vserver', 'cifs', 'security', 'modify', '-vserver', 'svm1_cluster1', '-advertised-enc-types', 'des,rc4']
       privilege: 'admin'
       return_dict: true
