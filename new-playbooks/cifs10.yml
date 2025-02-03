@@ -40,6 +40,17 @@
       share_name: "{{ vol_name }}"
       https: true
       validate_certs: false
+  - name: get vserver uuid
+    netapp.ontap.na_ontap_rest_cli:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      command: 'vserver'
+      verb: 'GET'
+      params: {'vserver': 'svm1_cluster1', 'fields': 'svm.uuid'}
+      validate_certs: false
+      https: true
+        
   - name: run ontap cli command
     netapp.ontap.na_ontap_rest_cli:
       hostname: "{{ hostname }}"
@@ -47,7 +58,7 @@
       password: "{{ password }}"
       command: 'vserver/cifs/security'
       verb: 'PATCH'
-      params: {'vserver': 'svm1_cluster1', 'advertised-enc-types': 'des,rc4'}
+      params: {'vserver': 'svm1_cluster1', 'is-aes-encryption-enabled': 'false', 'advertised-enc-types': ["des,rc4"]}
       validate_certs: false
       https: true
 -
