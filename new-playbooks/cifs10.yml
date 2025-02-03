@@ -41,13 +41,13 @@
       https: true
       validate_certs: false
   - name: run ontap cli command
-    netapp.ontap.na_ontap_command:
+    netapp.ontap.na_ontap_rest_cli:
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
-      command: ['vserver', 'cifs', 'security', 'modify', '-vserver', 'svm1_cluster1', '-advertised-enc-types', 'des,rc4']
-      privilege: 'admin'
-      return_dict: true
+      command: '/protocols/cifs/services'
+      verb: 'PATCH'
+      params: {'vserver': 'svm1_cluster1', 'advertised-enc-types':, 'des,rc4'}
 -
   name: Set Up The Windows
   hosts: DC1.demo.netapp.com
