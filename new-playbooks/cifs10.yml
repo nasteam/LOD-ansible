@@ -49,7 +49,7 @@
       verb: 'PATCH'
       params: {'vserver': 'svm1_cluster1', 'advertised-enc-types': 'des,rc4'}
       validate_certs: false
-      https: true
+      #https: true
 -
   name: Set Up The Windows
   hosts: DC1.demo.netapp.com
