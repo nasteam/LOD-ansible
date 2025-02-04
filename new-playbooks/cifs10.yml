@@ -51,6 +51,7 @@
       validate_certs: false
       https: true
       register: vserver_uuid
+      
   - name: display output
       debug:
       msg: "{{ vserver_uuid }}
