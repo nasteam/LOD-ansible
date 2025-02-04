@@ -47,9 +47,13 @@
       password: "{{ password }}"
       command: 'vserver'
       verb: 'GET'
-      params: {'vserver': 'svm1_cluster1', 'fields': 'svm.uuid'}
+      params: {'vserver': 'svm1_cluster1', 'fields': 'uuid'}
       validate_certs: false
       https: true
+      register: vserver_uuid
+  - name: display output
+      debug:
+      msg: "{{ vserver_uuid }}
         
   - name: run ontap cli command
     netapp.ontap.na_ontap_rest_cli:
