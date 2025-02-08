@@ -12,6 +12,7 @@
     aggr: cluster1_01_SSD_1
     vol_name: photoshop
     cifs_user: dougd
+    domain: DEMO.NETAPP.COM
   tasks:
   - name: Volume Create
     na_ontap_volume:
@@ -40,40 +41,48 @@
       share_name: "{{ vol_name }}"
       https: true
       validate_certs: false
-        
+
   - name: run ontap cli command
-    netapp.ontap.na_ontap_rest_cli:
+    netapp.ontap.na_ontap_cifs_server:
+      state: "present"
+      name: "CIFS1"
+      service_state: "stopped"
+      vserver: "{{ vserver }}"
+      kdc_encryption: "false"
+      #is-aes-encryption-enabled: "false"
+      #advertised-enc-types': ["des,rc4"]
+      domain: "{{ domain }}"
+      admin_user_name: "DEMO\\Administrator"
+      admin_password: "Netapp1!"
       hostname: "{{ hostname }}"
       username: "{{ username }}"
       password: "{{ password }}"
-      command: 'vserver/cifs/security'
-      verb: 'PATCH'
-      params: {'vserver': 'svm1_cluster1', 'is-aes-encryption-enabled': 'false', 'advertised-enc-types': ["des,rc4"]}
       validate_certs: false
       https: true
+
 -
   name: Set Up The Windows
   hosts: DC1.demo.netapp.com
   collections:
     - community.windows
-    - anisble.windows   
+    - anisble.windows
     - microsoft.ad
   vars:
-    hostname: 192.168.0.101
+    hostname: 192.168.0.253
     username: DEMO\Administrator
     password: Netapp1!
-    vserver: svm1_cluster1
-    aggr: aggr1
-    vol_name: photoshop
   tasks:
   - name: Map Drive via PS
     ansible.windows.win_powershell:
      script: |
       New-SmbMapping -LocalPath 'X:' -RemotePath '\\192.168.0.131\photoshop' -UserName 'DEMO\Administrator' -Password 'Netapp1!';
       Set-AdUser -Identity dougd -HomeDirectory "\\192.168.0.131\photoshop"
-  - name: set encryption types on cifs server
+  - name: Causing mischief
     microsoft.ad.computer:
       identity: cifs1$
-      kerberos_encryption_types: ["aes128", "aes256"]
+      kerberos_encryption_types:
+        set:
+          - aes128
+          - aes256
       enabled: yes
       state: present
