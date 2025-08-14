@@ -11,9 +11,9 @@
     vserver: svm1_cluster1
     aggr: cluster1_01_SSD_1
     vol_name: photoshop
-    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.com
     ontap_cert_name: svm1_rootca
-    s3_server_name: svm1.demo.netapp.local
+    s3_server_name: svm1.demo.netapp.com
     win_server_name: dc1.demo.netapp.com
     private_key: /etc/ssl/private/{{ s3_server_name }}.pem
     csr_path: /etc/ssl/csr/{{ s3_server_name }}.csr
@@ -40,6 +40,7 @@
       path: "{{ csr_path }}"
       privatekey_path: "{{ private_key }}"
       common_name: "{{ s3_server_name }}"
+      subject_alt_name: "IP:192.168.0.131,IP:192.168.0.132,DNS:cifs1,DNS:cifs1.demo.netapp.com"
   - name: Windows Generate an OpenSSL private key with the default values (4096 bits, RSA)
     community.crypto.openssl_privatekey:
       path: "{{ win_private_key }}"
