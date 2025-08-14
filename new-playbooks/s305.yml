@@ -10,7 +10,7 @@
     vserver: svm1
     aggr: cluster1_01_SSD_1
     vol_name: photoshop
-    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.com
     ontap_cert_name: svm1_rootca
     s3_server_name: s3_cluster1
     s3_user: sm_s3_user
