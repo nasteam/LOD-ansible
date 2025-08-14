@@ -11,9 +11,9 @@
     vserver: svm1
     aggr: cluster1_01_SSD_1
     vol_name: photoshop
-    ontap_cert_root_common_name: svm1_ca.demo.netapp.local
+    ontap_cert_root_common_name: svm1_ca.demo.netapp.com
     ontap_cert_name: svm1_rootca
-    s3_server_name: svm1.demo.netapp.local
+    s3_server_name: svm1.demo.netapp.com
     private_key: /etc/ssl/private/{{ s3_server_name }}.pem
     csr_path: /etc/ssl/csr/{{ s3_server_name }}.csr
     bucket_name: svm1-bucket
