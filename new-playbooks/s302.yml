@@ -37,6 +37,7 @@
       path: "{{ csr_path }}"
       privatekey_path: "{{ private_key }}"
       common_name: "{{ s3_server_name }}"
+      subject_alt_name: "IP:192.168.0.131,IP:192.168.0.132,DNS:cifs1,DNS:cifs1.demo.netapp.com"
   - name: Create root-ca cert
     netapp.ontap.na_ontap_security_certificates:
       common_name: "{{ ontap_cert_root_common_name }}"
